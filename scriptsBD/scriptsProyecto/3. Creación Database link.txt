@@ -1,0 +1,17 @@
+-- MASTER
+CREATE DATABASE LINK db_link_remoto
+CONNECT TO tiendasNorte IDENTIFIED BY tiendasnorte
+USING 'TNS_REMOTO';
+
+-- REMOTO
+CREATE DATABASE LINK db_link_master
+CONNECT TO tiendasMaster IDENTIFIED BY tiendasmaster
+USING 'TNS_MASTER';
+
+
+-- PRUEBAS DE CONEXION
+-- Conexión MASTER a REMOTO
+SELECT * FROM CLIENTE@db_link_remoto;
+
+-- Conexión REMOTO a MASTER
+SELECT * FROM PRODUCTO@db_link_master;

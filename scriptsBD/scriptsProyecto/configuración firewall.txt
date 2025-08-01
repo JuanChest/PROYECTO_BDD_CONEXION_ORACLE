@@ -1,0 +1,13 @@
+netsh advfirewall firewall add rule name="Oracle Listener 1521 TCP-IN" dir=in action=allow protocol=TCP localport=1521
+netsh advfirewall firewall add rule name="Oracle Listener 1521 TCP-OUT" dir=out action=allow protocol=TCP localport=1521
+
+
+netsh advfirewall firewall add rule name="Radmin VPN UDP-IN" dir=in action=allow protocol=UDP localport=17000
+netsh advfirewall firewall add rule name="Radmin VPN UDP-OUT" dir=out action=allow protocol=UDP localport=17000
+
+netsh advfirewall firewall add rule name="Oracle DB Executables" dir=in action=allow program="C:\oracle\product\19.3.0.0\db_1\bin\tnslsnr.exe" enable=yes
+netsh advfirewall firewall add rule name="Radmin VPN Executable" dir=in action=allow program="C:\Program Files (x86)\Radmin VPN\RadminVPN.exe" enable=yes
+
+
+-- Verificar reglas con 
+netsh advfirewall firewall show rule name=all

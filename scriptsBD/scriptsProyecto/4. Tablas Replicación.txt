@@ -1,0 +1,63 @@
+-- EN EL REMOTO O TIENDAS_NORTE
+-- Primero dar permisos al REMOTO (ejecutar como system)
+GRANT CREATE MATERIALIZED VIEW TO tiendasNorte;
+GRANT CREATE TABLE TO tiendasNorte;
+GRANT CREATE JOB TO tiendasNorte;
+
+-- Replicación de producto
+CREATE MATERIALIZED VIEW PRODUCTO_REP
+BUILD IMMEDIATE
+REFRESH COMPLETE ON DEMAND
+AS
+SELECT * FROM PRODUCTO@db_link_master;
+
+-- Replicación de Cliente
+CREATE MATERIALIZED VIEW CLIENTE_REP
+BUILD IMMEDIATE
+REFRESH COMPLETE ON DEMAND
+AS
+SELECT * FROM CLIENTE@db_link_master;
+
+-- Replicación de Proveedor
+CREATE MATERIALIZED VIEW PROVEEDOR_REP
+BUILD IMMEDIATE
+REFRESH COMPLETE ON DEMAND
+AS
+SELECT * FROM PROVEEDOR@db_link_master;
+
+-- Hacer una actualización manual
+-- Actualizar la vista materializada de productos
+EXEC DBMS_MVIEW.REFRESH('PRODUCTO_REP');
+
+-- Actualizar la vista materializada de clientes
+EXEC DBMS_MVIEW.REFRESH('CLIENTE_REP');
+
+-- Actualizar la vista materializada de proveedores
+EXEC DBMS_MVIEW.REFRESH('PROVEEDOR_REP');
+
+
+-- Creación de un job automático para que actualice las vistas materializadas
+
+BEGIN
+  DBMS_SCHEDULER.CREATE_JOB (
+    job_name        => 'REFRESH_REPLICAS_CADA_MINUTO',
+    job_type        => 'PLSQL_BLOCK',
+    job_action      => 'BEGIN
+                          DBMS_MVIEW.REFRESH(''PRODUCTO_REP'');
+                          DBMS_MVIEW.REFRESH(''CLIENTE_REP'');
+                          DBMS_MVIEW.REFRESH(''PROVEEDOR_REP'');
+                        END;',
+    start_date      => SYSTIMESTAMP,
+    repeat_interval => 'FREQ=MINUTELY;INTERVAL=1',
+    enabled         => TRUE,
+    comments        => 'Actualiza vistas materializadas cada minuto'
+  );
+END;
+/
+
+-- Para borrar el job
+BEGIN
+  DBMS_SCHEDULER.DROP_JOB('REFRESH_VISTAS_MV');
+END;
+/
+
