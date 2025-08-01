@@ -3,335 +3,204 @@
 /* DBMS name:      ORACLE Version 11g                           */
 /* Created on:     1/6/2025 15:10:46                            */
 /*==============================================================*/
+/* Borrar tablas si existen */
 
-
-alter table DETALLE_VENTA
-   drop constraint FK_DETALLE__CORRESPON_PRODUCTO;
-
-alter table DETALLE_VENTA
-   drop constraint FK_DETALLE__TIENE3_VENTAS;
-
-alter table EMPLEADO
-   drop constraint FK_EMPLEADO_TIENE_TIENDA;
-
-alter table INVENTARIO
-   drop constraint FK_INVENTAR_GESTIONA_TIENDA;
-
-alter table PRODUCTO
-   drop constraint FK_PRODUCTO_ES_CATEGORI;
-
-alter table PRODUCTO
-   drop constraint FK_PRODUCTO_TIENE2_PROVEEDO;
-
-alter table TIENDA
-   drop constraint FK_TIENDA_PERTENECE_REGION;
-
-alter table TIENE1
-   drop constraint FK_TIENE1_TIENE1_PRODUCTO;
-
-alter table TIENE1
-   drop constraint FK_TIENE1_TIENE4_INVENTAR;
-
-alter table VENTAS
-   drop constraint FK_VENTAS_HACE_CLIENTE;
-
-alter table VENTAS
-   drop constraint FK_VENTAS_REALIZA_TIENDA;
-
-drop table CATEGORIA cascade constraints;
-
-drop table CLIENTE cascade constraints;
-
-drop index CORRESPONDE_FK;
-
-drop index TIENE3_FK;
-
-drop table DETALLE_VENTA cascade constraints;
-
-drop index TIENE_FK;
-
-drop table EMPLEADO cascade constraints;
-
-drop index GESTIONA_FK;
-
-drop table INVENTARIO cascade constraints;
-
-drop index ES_FK;
-
-drop index TIENE2_FK;
-
-drop table PRODUCTO cascade constraints;
-
-drop table PROVEEDOR cascade constraints;
-
-drop table REGION cascade constraints;
-
-drop index PERTENECE_FK;
-
-drop table TIENDA cascade constraints;
-
-drop index TIENE1_FK;
-
-drop index TIENE4_FK;
-
-drop table TIENE1 cascade constraints;
-
-drop index HACE_FK;
-
-drop index REALIZA_FK;
-
-drop table VENTAS cascade constraints;
+DROP TABLE DETALLE_VENTA CASCADE CONSTRAINTS;
+DROP TABLE EMPLEADO CASCADE CONSTRAINTS;
+DROP TABLE INVENTARIO CASCADE CONSTRAINTS;
+DROP TABLE PRODUCTO CASCADE CONSTRAINTS;
+DROP TABLE PROVEEDOR CASCADE CONSTRAINTS;
+DROP TABLE REGION CASCADE CONSTRAINTS;
+DROP TABLE TIENDA CASCADE CONSTRAINTS;
+DROP TABLE PRODUCTO_INVENTARIO CASCADE CONSTRAINTS;
+DROP TABLE VENTAS CASCADE CONSTRAINTS;
+DROP TABLE CATEGORIA CASCADE CONSTRAINTS;
+DROP TABLE CLIENTE CASCADE CONSTRAINTS;
 
 /*==============================================================*/
-/* Table: CATEGORIA                                             */
+/* Tabla: CATEGORIA                                             */
 /*==============================================================*/
-create table CATEGORIA 
-(
-   CATEGORIA_ID         INTEGER              not null,
-   NOMBRE_CATEGORIA     VARCHAR2(50)         not null,
-   DESCRIPCION          CLOB,
-   constraint PK_CATEGORIA primary key (CATEGORIA_ID)
+CREATE TABLE CATEGORIA (
+                           CATEGORIA_ID     INTEGER NOT NULL,
+                           NOMBRE_CATEGORIA VARCHAR2(50) NOT NULL,
+                           DESCRIPCION      CLOB,
+                           CONSTRAINT PK_CATEGORIA PRIMARY KEY (CATEGORIA_ID)
 );
 
 /*==============================================================*/
-/* Table: CLIENTE                                               */
+/* Tabla: CLIENTE                                               */
 /*==============================================================*/
-create table CLIENTE 
-(
-   CLIENTE_ID           INTEGER              not null,
-   NOMBRE               VARCHAR2(50)         not null,
-   APELLIDO             VARCHAR2(50)         not null,
-   EMAIL                VARCHAR2(50)         not null,
-   TELEFONO             CHAR(10)             not null,
-   constraint PK_CLIENTE primary key (CLIENTE_ID)
+CREATE TABLE CLIENTE (
+                         CLIENTE_ID INTEGER NOT NULL,
+                         NOMBRE     VARCHAR2(50) NOT NULL,
+                         APELLIDO   VARCHAR2(50) NOT NULL,
+                         EMAIL      VARCHAR2(50) NOT NULL,
+                         TELEFONO   CHAR(10) NOT NULL,
+                         CONSTRAINT PK_CLIENTE PRIMARY KEY (CLIENTE_ID)
 );
 
 /*==============================================================*/
-/* Table: DETALLE_VENTA                                         */
+/* Tabla: DETALLE_VENTA                                         */
 /*==============================================================*/
-create table DETALLE_VENTA 
-(
-   VENTA_ID             INTEGER              not null,
-   DETALLE_ID           INTEGER              not null,
-   PRODUCTO_ID          INTEGER              not null,
-   CANTIDAD             INTEGER,
-   PRECIO_UNITARIO      NUMBER(7,2),
-   SUB_TOTAL            NUMBER(7,2),
-   constraint PK_DETALLE_VENTA primary key (VENTA_ID, DETALLE_ID)
+CREATE TABLE DETALLE_VENTA (
+                               VENTA_ID        INTEGER NOT NULL,
+                               DETALLE_ID      INTEGER NOT NULL,
+                               PRODUCTO_ID     INTEGER NOT NULL,
+                               CANTIDAD        INTEGER,
+                               PRECIO_UNITARIO NUMBER(7,2),
+                               SUB_TOTAL       NUMBER(7,2),
+                               CONSTRAINT PK_DETALLE_VENTA PRIMARY KEY (VENTA_ID, DETALLE_ID)
+);
+
+CREATE INDEX IDX_DETALLEVENTA_VENTAS ON DETALLE_VENTA (VENTA_ID ASC);
+CREATE INDEX IDX_DETALLEVENTA_PRODUCTO ON DETALLE_VENTA (PRODUCTO_ID ASC);
+
+/*==============================================================*/
+/* Tabla: EMPLEADO                                              */
+/*==============================================================*/
+CREATE TABLE EMPLEADO (
+                          EMPLEADO_ID INTEGER NOT NULL,
+                          ID_TIENDA   INTEGER NOT NULL,
+                          NOMBRE      VARCHAR2(50) NOT NULL,
+                          APELLIDO    VARCHAR2(50) NOT NULL,
+                          CARGO       VARCHAR2(50) NOT NULL,
+                          CONSTRAINT PK_EMPLEADO PRIMARY KEY (EMPLEADO_ID)
+);
+
+CREATE INDEX IDX_EMPLEADO_TIENDA ON EMPLEADO (ID_TIENDA ASC);
+
+/*==============================================================*/
+/* Tabla: INVENTARIO                                            */
+/*==============================================================*/
+CREATE TABLE INVENTARIO (
+                            INVENTARIO_ID INTEGER NOT NULL,
+                            ID_TIENDA     INTEGER NOT NULL,
+                            CANTIDAD      INTEGER NOT NULL,
+                            CONSTRAINT PK_INVENTARIO PRIMARY KEY (INVENTARIO_ID)
+);
+
+CREATE INDEX IDX_INVENTARIO_TIENDA ON INVENTARIO (ID_TIENDA ASC);
+
+/*==============================================================*/
+/* Tabla: PRODUCTO                                              */
+/*==============================================================*/
+CREATE TABLE PRODUCTO (
+                          PRODUCTO_ID  INTEGER NOT NULL,
+                          PROVEEDOR_ID INTEGER NOT NULL,
+                          CATEGORIA_ID INTEGER NOT NULL,
+                          NOMBRE       VARCHAR2(50) NOT NULL,
+                          PRECIO       NUMBER(7,2) NOT NULL,
+                          CONSTRAINT PK_PRODUCTO PRIMARY KEY (PRODUCTO_ID)
+);
+
+CREATE INDEX IDX_PRODUCTO_PROVEEDOR ON PRODUCTO (PROVEEDOR_ID ASC);
+CREATE INDEX IDX_PRODUCTO_CATEGORIA ON PRODUCTO (CATEGORIA_ID ASC);
+
+/*==============================================================*/
+/* Tabla: PROVEEDOR                                             */
+/*==============================================================*/
+CREATE TABLE PROVEEDOR (
+                           PROVEEDOR_ID INTEGER NOT NULL,
+                           NOMBRE       VARCHAR2(50) NOT NULL,
+                           EMAIL        VARCHAR2(50) NOT NULL,
+                           TELEFONO     CHAR(10) NOT NULL,
+                           CONSTRAINT PK_PROVEEDOR PRIMARY KEY (PROVEEDOR_ID)
 );
 
 /*==============================================================*/
-/* Index: TIENE3_FK                                             */
+/* Tabla: REGION                                                */
 /*==============================================================*/
-create index TIENE3_FK on DETALLE_VENTA (
-   VENTA_ID ASC
+CREATE TABLE REGION (
+                        REGION_ID     INTEGER NOT NULL,
+                        NOMBRE_REGION CHAR(8) NOT NULL,
+                        CONSTRAINT PK_REGION PRIMARY KEY (REGION_ID)
 );
 
 /*==============================================================*/
-/* Index: CORRESPONDE_FK                                        */
+/* Tabla: TIENDA                                                */
 /*==============================================================*/
-create index CORRESPONDE_FK on DETALLE_VENTA (
-   PRODUCTO_ID ASC
+CREATE TABLE TIENDA (
+                        ID_TIENDA INTEGER NOT NULL,
+                        REGION_ID INTEGER NOT NULL,
+                        NOMBRE    VARCHAR2(50) NOT NULL,
+                        DIRECCION VARCHAR2(50) NOT NULL,
+                        CONSTRAINT PK_TIENDA PRIMARY KEY (ID_TIENDA)
 );
 
+CREATE INDEX IDX_TIENDA_REGION ON TIENDA (REGION_ID ASC);
+
 /*==============================================================*/
-/* Table: EMPLEADO                                              */
+/* Tabla: PRODUCTO_INVENTARIO (antes TIENE1)                    */
 /*==============================================================*/
-create table EMPLEADO 
-(
-   EMPLEADO_ID          INTEGER              not null,
-   ID_TIENDA            INTEGER              not null,
-   NOMBRE               VARCHAR2(50)         not null,
-   APELLIDO             VARCHAR2(50)         not null,
-   CARGO                VARCHAR2(50)         not null,
-   constraint PK_EMPLEADO primary key (EMPLEADO_ID)
+CREATE TABLE PRODUCTO_INVENTARIO (
+                                     PRODUCTO_ID   INTEGER NOT NULL,
+                                     INVENTARIO_ID INTEGER NOT NULL,
+                                     CONSTRAINT PK_PRODUCTO_INVENTARIO PRIMARY KEY (PRODUCTO_ID, INVENTARIO_ID)
 );
 
+CREATE INDEX IDX_PROD_INV_INVENTARIO ON PRODUCTO_INVENTARIO (INVENTARIO_ID ASC);
+CREATE INDEX IDX_PROD_INV_PRODUCTO ON PRODUCTO_INVENTARIO (PRODUCTO_ID ASC);
+
 /*==============================================================*/
-/* Index: TIENE_FK                                              */
+/* Tabla: VENTAS                                                */
 /*==============================================================*/
-create index TIENE_FK on EMPLEADO (
-   ID_TIENDA ASC
+CREATE TABLE VENTAS (
+                        VENTA_ID  INTEGER NOT NULL,
+                        ID_TIENDA INTEGER NOT NULL,
+                        CLIENTE_ID INTEGER NOT NULL,
+                        FECHA     DATE NOT NULL,
+                        TOTAL     FLOAT NOT NULL,
+                        CONSTRAINT PK_VENTAS PRIMARY KEY (VENTA_ID)
 );
 
-/*==============================================================*/
-/* Table: INVENTARIO                                            */
-/*==============================================================*/
-create table INVENTARIO 
-(
-   INVENTARIO_ID        INTEGER              not null,
-   ID_TIENDA            INTEGER              not null,
-   CANTIDAD             INTEGER              not null,
-   constraint PK_INVENTARIO primary key (INVENTARIO_ID)
-);
+CREATE INDEX IDX_VENTAS_TIENDA ON VENTAS (ID_TIENDA ASC);
+CREATE INDEX IDX_VENTAS_CLIENTE ON VENTAS (CLIENTE_ID ASC);
 
 /*==============================================================*/
-/* Index: GESTIONA_FK                                           */
+/* Relaciones (Foreign Keys)                                    */
 /*==============================================================*/
-create index GESTIONA_FK on INVENTARIO (
-   ID_TIENDA ASC
-);
+ALTER TABLE DETALLE_VENTA
+    ADD CONSTRAINT FK_DETALLEVENTA_PRODUCTO FOREIGN KEY (PRODUCTO_ID)
+        REFERENCES PRODUCTO (PRODUCTO_ID);
 
-/*==============================================================*/
-/* Table: PRODUCTO                                              */
-/*==============================================================*/
-create table PRODUCTO 
-(
-   PRODUCTO_ID          INTEGER              not null,
-   PROVEEDOR_ID         INTEGER              not null,
-   CATEGORIA_ID         INTEGER              not null,
-   NOMBRE               VARCHAR2(50)         not null,
-   PRECIO               NUMBER(7,2)          not null,
-   constraint PK_PRODUCTO primary key (PRODUCTO_ID)
-);
+ALTER TABLE DETALLE_VENTA
+    ADD CONSTRAINT FK_DETALLEVENTA_VENTAS FOREIGN KEY (VENTA_ID)
+        REFERENCES VENTAS (VENTA_ID);
 
-/*==============================================================*/
-/* Index: TIENE2_FK                                             */
-/*==============================================================*/
-create index TIENE2_FK on PRODUCTO (
-   PROVEEDOR_ID ASC
-);
+ALTER TABLE EMPLEADO
+    ADD CONSTRAINT FK_EMPLEADO_TIENDA FOREIGN KEY (ID_TIENDA)
+        REFERENCES TIENDA (ID_TIENDA);
 
-/*==============================================================*/
-/* Index: ES_FK                                                 */
-/*==============================================================*/
-create index ES_FK on PRODUCTO (
-   CATEGORIA_ID ASC
-);
+ALTER TABLE INVENTARIO
+    ADD CONSTRAINT FK_INVENTARIO_TIENDA FOREIGN KEY (ID_TIENDA)
+        REFERENCES TIENDA (ID_TIENDA);
 
-/*==============================================================*/
-/* Table: PROVEEDOR                                             */
-/*==============================================================*/
-create table PROVEEDOR 
-(
-   PROVEEDOR_ID         INTEGER              not null,
-   NOMBRE               VARCHAR2(50)         not null,
-   EMAIL                VARCHAR2(50)         not null,
-   TELEFONO             CHAR(10)             not null,
-   constraint PK_PROVEEDOR primary key (PROVEEDOR_ID)
-);
+ALTER TABLE PRODUCTO
+    ADD CONSTRAINT FK_PRODUCTO_CATEGORIA FOREIGN KEY (CATEGORIA_ID)
+        REFERENCES CATEGORIA (CATEGORIA_ID);
 
-/*==============================================================*/
-/* Table: REGION                                                */
-/*==============================================================*/
-create table REGION 
-(
-   REGION_ID            INTEGER              not null,
-   NOMBRE_REGION        CHAR(8)              not null,
-   constraint PK_REGION primary key (REGION_ID)
-);
+ALTER TABLE PRODUCTO
+    ADD CONSTRAINT FK_PRODUCTO_PROVEEDOR FOREIGN KEY (PROVEEDOR_ID)
+        REFERENCES PROVEEDOR (PROVEEDOR_ID);
 
-/*==============================================================*/
-/* Table: TIENDA                                                */
-/*==============================================================*/
-create table TIENDA 
-(
-   ID_TIENDA            INTEGER              not null,
-   REGION_ID            INTEGER              not null,
-   NOMBRE               VARCHAR2(50)         not null,
-   DIRECCION            VARCHAR2(50)         not null,
-   constraint PK_TIENDA primary key (ID_TIENDA)
-);
+ALTER TABLE TIENDA
+    ADD CONSTRAINT FK_TIENDA_REGION FOREIGN KEY (REGION_ID)
+        REFERENCES REGION (REGION_ID);
 
-/*==============================================================*/
-/* Index: PERTENECE_FK                                          */
-/*==============================================================*/
-create index PERTENECE_FK on TIENDA (
-   REGION_ID ASC
-);
+ALTER TABLE PRODUCTO_INVENTARIO
+    ADD CONSTRAINT FK_PROD_INV_PRODUCTO FOREIGN KEY (PRODUCTO_ID)
+        REFERENCES PRODUCTO (PRODUCTO_ID);
 
-/*==============================================================*/
-/* Table: TIENE1                                                */
-/*==============================================================*/
-create table TIENE1 
-(
-   PRODUCTO_ID          INTEGER              not null,
-   INVENTARIO_ID        INTEGER              not null,
-   constraint PK_TIENE1 primary key (PRODUCTO_ID, INVENTARIO_ID)
-);
+ALTER TABLE PRODUCTO_INVENTARIO
+    ADD CONSTRAINT FK_PROD_INV_INVENTARIO FOREIGN KEY (INVENTARIO_ID)
+        REFERENCES INVENTARIO (INVENTARIO_ID);
 
-/*==============================================================*/
-/* Index: TIENE4_FK                                             */
-/*==============================================================*/
-create index TIENE4_FK on TIENE1 (
-   INVENTARIO_ID ASC
-);
+ALTER TABLE VENTAS
+    ADD CONSTRAINT FK_VENTAS_CLIENTE FOREIGN KEY (CLIENTE_ID)
+        REFERENCES CLIENTE (CLIENTE_ID);
 
-/*==============================================================*/
-/* Index: TIENE1_FK                                             */
-/*==============================================================*/
-create index TIENE1_FK on TIENE1 (
-   PRODUCTO_ID ASC
-);
+ALTER TABLE VENTAS
+    ADD CONSTRAINT FK_VENTAS_TIENDA FOREIGN KEY (ID_TIENDA)
+        REFERENCES TIENDA (ID_TIENDA);
 
-/*==============================================================*/
-/* Table: VENTAS                                                */
-/*==============================================================*/
-create table VENTAS 
-(
-   VENTA_ID             INTEGER              not null,
-   ID_TIENDA            INTEGER              not null,
-   CLIENTE_ID           INTEGER              not null,
-   FECHA                DATE                 not null,
-   TOTAL                FLOAT                not null,
-   constraint PK_VENTAS primary key (VENTA_ID)
-);
-
-/*==============================================================*/
-/* Index: REALIZA_FK                                            */
-/*==============================================================*/
-create index REALIZA_FK on VENTAS (
-   ID_TIENDA ASC
-);
-
-/*==============================================================*/
-/* Index: HACE_FK                                               */
-/*==============================================================*/
-create index HACE_FK on VENTAS (
-   CLIENTE_ID ASC
-);
-
-alter table DETALLE_VENTA
-   add constraint FK_DETALLE__CORRESPON_PRODUCTO foreign key (PRODUCTO_ID)
-      references PRODUCTO (PRODUCTO_ID);
-
-alter table DETALLE_VENTA
-   add constraint FK_DETALLE__TIENE3_VENTAS foreign key (VENTA_ID)
-      references VENTAS (VENTA_ID);
-
-alter table EMPLEADO
-   add constraint FK_EMPLEADO_TIENE_TIENDA foreign key (ID_TIENDA)
-      references TIENDA (ID_TIENDA);
-
-alter table INVENTARIO
-   add constraint FK_INVENTAR_GESTIONA_TIENDA foreign key (ID_TIENDA)
-      references TIENDA (ID_TIENDA);
-
-alter table PRODUCTO
-   add constraint FK_PRODUCTO_ES_CATEGORI foreign key (CATEGORIA_ID)
-      references CATEGORIA (CATEGORIA_ID);
-
-alter table PRODUCTO
-   add constraint FK_PRODUCTO_TIENE2_PROVEEDO foreign key (PROVEEDOR_ID)
-      references PROVEEDOR (PROVEEDOR_ID);
-
-alter table TIENDA
-   add constraint FK_TIENDA_PERTENECE_REGION foreign key (REGION_ID)
-      references REGION (REGION_ID);
-
-alter table TIENE1
-   add constraint FK_TIENE1_TIENE1_PRODUCTO foreign key (PRODUCTO_ID)
-      references PRODUCTO (PRODUCTO_ID);
-
-alter table TIENE1
-   add constraint FK_TIENE1_TIENE4_INVENTAR foreign key (INVENTARIO_ID)
-      references INVENTARIO (INVENTARIO_ID);
-
-alter table VENTAS
-   add constraint FK_VENTAS_HACE_CLIENTE foreign key (CLIENTE_ID)
-      references CLIENTE (CLIENTE_ID);
-
-alter table VENTAS
-   add constraint FK_VENTAS_REALIZA_TIENDA foreign key (ID_TIENDA)
-      references TIENDA (ID_TIENDA);
 
