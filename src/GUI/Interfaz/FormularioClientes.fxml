@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controladores.RegistroClienteController">
+    <VBox alignment="CENTER" spacing="15.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
+
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Registro de Cliente" textFill="WHITE" />
+      <TextField fx:id="txtClienteID" prefWidth="299.0" promptText="Cliente_ID" />
+
+        <TextField fx:id="txtNombre" promptText="Nombre" />
+        <TextField fx:id="txtApellido" promptText="Apellido" />
+        <TextField fx:id="txtCorreo" promptText="Correo Electrónico" />
+      <TextField fx:id="txtTelefono" prefWidth="299.0" promptText="Teléfono" />
+
+    </VBox>
+   <Button fx:id="btnGuardar1" layoutX="325.0" layoutY="361.0" onAction="#regresar" style="-fx-background-color: #1d9ec8; -fx-text-fill: white;" text="Regresar" />
+
+     <Button fx:id="btnGuardar" layoutX="170.0" layoutY="308.0" onAction="#guardarCliente" style="-fx-background-color: #1d9ec8; -fx-text-fill: white;" text="Guardar" />
+</AnchorPane>
