@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Interfaz.GestionProductoController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.UserControl.GestionProductoController">
 
     <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
 
@@ -17,7 +17,7 @@
         </top>
 
         <center>
-            <TableView fx:id="tablaClientes">
+            <TableView fx:id="tablaProductos">
                 <columns>
                     <TableColumn fx:id="colIdProducto" text="ID Producto" />
                     <TableColumn fx:id="colIdProveedor" text="ID Proveedor" />
