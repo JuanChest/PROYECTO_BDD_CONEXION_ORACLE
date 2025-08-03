@@ -9,7 +9,7 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         // Cargar el FXML
         Parent root = FXMLLoader.load(getClass().getResource(
-                "GUI/Interfaz/GestionProducto.fxml"));
+                "GUI/Interfaz/GestionProductoInventario.fxml"));
 
         Scene scene = new Scene(root);
         primaryStage.setTitle("Gestion Categoria");

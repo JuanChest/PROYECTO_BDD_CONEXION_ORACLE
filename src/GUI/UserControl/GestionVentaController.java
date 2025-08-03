@@ -1,10 +1,25 @@
 package GUI.UserControl;
 
+import DataAccessComponent.ConexionOracleMaster;
+import javafx.beans.Observable;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class GestionVentaController {
 
@@ -21,41 +36,106 @@ public class GestionVentaController {
     private Button btnEliminar1;
 
     @FXML
-    private TableColumn<?, ?> colFecha;
+    private TableColumn<ObservableList<String>, String> colFecha;
 
     @FXML
-    private TableColumn<?, ?> colIdCliente;
+    private TableColumn<ObservableList<String>, String> colIdCliente;
 
     @FXML
-    private TableColumn<?, ?> colIdTienda;
+    private TableColumn<ObservableList<String>, String> colIdTienda;
 
     @FXML
-    private TableColumn<?, ?> colIdVenta;
+    private TableColumn<ObservableList<String>, String> colIdVenta;
 
     @FXML
-    private TableColumn<?, ?> colTotal;
+    private TableColumn<ObservableList<String>, String> colTotal;
 
     @FXML
-    private TableView<?> tablaClientes;
+    private TableView<ObservableList<String>> tablaVentas;
+
+    public static ObservableList<String> ventaSeleccionada;
 
     @FXML
-    void agregarNuevoVenta(ActionEvent event) {
+    public void initialize() {
+        cargarDatos();
+    }
 
+    private void cargarDatos() {
+        ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
+        try (Connection conn = ConexionOracleMaster.getConnection()) {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT VENTA_ID, ID_TIENDA, CLIENTE_ID, TO_CHAR(FECHA, 'YYYY-MM-DD') AS FECHA, TOTAL FROM VENTAS ORDER BY VENTA_ID");
+
+            while (rs.next()) {
+                ObservableList<String> row = FXCollections.observableArrayList();
+                row.add(rs.getString("VENTA_ID"));
+                row.add(rs.getString("ID_TIENDA"));
+                row.add(rs.getString("CLIENTE_ID"));
+                row.add(rs.getString("FECHA"));
+                row.add(rs.getString("TOTAL"));
+                data.add(row);
+            }
+
+            colIdVenta.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
+            colIdTienda.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
+            colIdCliente.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
+            colFecha.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(3)));
+            colTotal.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
+
+            tablaVentas.setItems(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
-    void editarVenta(ActionEvent event) {
-
+    void agregarNuevoVenta() throws Exception {
+        abrirVentana("GUI/Interfaz/FormularioVentas.fxml", "Registrar Venta");
     }
 
     @FXML
-    void eliminarVenta(ActionEvent event) {
-
+    void editarVenta() throws Exception {
+        ventaSeleccionada = tablaVentas.getSelectionModel().getSelectedItem();
+        if (ventaSeleccionada != null) {
+            abrirVentana("GUI/Interfaz/ModificadorVenta.fxml", "Modificar Venta");
+        } else {
+            mostrarAlerta("Seleccione una venta para editar", Alert.AlertType.WARNING);
+        }
     }
 
     @FXML
-    void regresar(ActionEvent event) {
+    void eliminarVenta() {
+        ObservableList<String> seleccionada = tablaVentas.getSelectionModel().getSelectedItem();
+        if (seleccionada != null) {
+            try(Connection conn = ConexionOracleMaster.getConnection()){
+                Statement stmt = conn.createStatement();
+                stmt.executeUpdate("DELETE FROM VENTAS WHERE VENTA_ID = '" + seleccionada.get(0) + "'");
+                cargarDatos();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        } else {
+            mostrarAlerta("Seleccione una venta para eliminar", Alert.AlertType.WARNING);
+        }
+    }
 
+    @FXML
+    void regresar() {
+        ((Stage) btnEliminar1.getScene().getWindow()).close();
+    }
+    private void abrirVentana(String fxml, String titulo) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxml));
+        Stage stage = new Stage();
+        stage.setTitle(titulo);
+        stage.setScene(new Scene(root));
+        stage.showAndWait();
+        cargarDatos();
+    }
+
+    private void mostrarAlerta(String mensaje, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 
 }

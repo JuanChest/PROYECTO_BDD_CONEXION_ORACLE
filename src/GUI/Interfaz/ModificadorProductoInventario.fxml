@@ -6,13 +6,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Interfaz.ModificadorProductoInventarioController">
+<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.UserControl.ModificadorProductoInventarioController">
     <VBox alignment="CENTER" layoutX="51.2" prefHeight="300.0" prefWidth="299.0" spacing="15.0" AnchorPane.leftAnchor="51.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
 
         <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Producto - Inventario" textFill="WHITE" />
 
-        <TextField fx:id="txtId" promptText="Id_Producto" />
-      <TextField fx:id="txtId1" promptText="Id_Inventario" />
+        <TextField fx:id="txtIdProducto" promptText="Id_Producto" />
+      <TextField fx:id="txtIdInventario" promptText="Id_Inventario" />
 
         <Button fx:id="btnGuardar" onAction="#guardarProductoInventario" style="-fx-background-color: #20dad8; -fx-text-fill: white;" text="Guardar" />
 
