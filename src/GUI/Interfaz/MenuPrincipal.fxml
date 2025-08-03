@@ -7,16 +7,17 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #365546;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.UserControl.MenuPrincipalController">
 
-    <VBox alignment="CENTER" spacing="20" AnchorPane.bottomAnchor="50" AnchorPane.leftAnchor="50" AnchorPane.rightAnchor="50" AnchorPane.topAnchor="50">
+    <VBox alignment="CENTER" layoutX="51.2" layoutY="14.4" prefHeight="376.0" prefWidth="498.0" spacing="20" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="51.0" AnchorPane.rightAnchor="51.0" AnchorPane.topAnchor="14.0">
 
-        <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Menú Principal" textFill="WHITE" />
+        <Label prefHeight="45.0" prefWidth="170.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Menú Principal" textFill="WHITE" />
 
-        <Button fx:id="btnVuelos" onAction="#entrarGestionVuelos" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Tiendas" />
-        <Button fx:id="btnEmpleados" onAction="#entrarGestionEmpleados" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Inventario" />
-        <Button fx:id="btnReservas" onAction="#entrarGestionReservas" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Ventas" />
-        <Button fx:id="btnAviones" onAction="#entrarGestionAviones" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Productos" />
-        <Button fx:id="btnClientes" onAction="#entrarGestionClientes" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Proveedores" />
-      <Button fx:id="btnTripulacion" onAction="#entrarTripulacion" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Clientes" />
+        <Button fx:id="btnTiendas" onAction="#gestionarTiendas" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Tiendas" />
+        <Button fx:id="btnInventario" onAction="#gestionarInventario" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Inventario" />
+        <Button fx:id="btnVentas" onAction="#gestionarVentas" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Ventas" />
+        <Button fx:id="btnProductos" onAction="#gestionarProductos" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Productos" />
+        <Button fx:id="btnProveedor" onAction="#gestionarProveedores" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Proveedores" />
+      <Button fx:id="btnClientes" onAction="#gestionarClientes" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Clientes" />
+      <Button fx:id="btnAuditar" mnemonicParsing="false" onAction="#entrarAuditar" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-font-size: 16; -fx-text-fill: white;" text="Auditar" />
 
     </VBox>
 
