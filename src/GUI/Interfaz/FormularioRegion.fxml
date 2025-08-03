@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controladores.RegistroAvionController">
+<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Interfaz.FormularioRegionController">
     <VBox alignment="CENTER" spacing="15.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
 
         <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Registro de Región" textFill="WHITE" />

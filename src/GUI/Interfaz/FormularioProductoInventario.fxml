@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controladores.RegistroAvionController">
+<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Interfaz.FormularioProductoInventarioController">
     <VBox alignment="CENTER" spacing="15.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
 
         <Label prefHeight="30.0" prefWidth="333.0" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Registro Producto - Inventario" textAlignment="CENTER" textFill="WHITE">
