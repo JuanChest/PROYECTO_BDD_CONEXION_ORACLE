@@ -3,10 +3,12 @@ package GUI.UserControl;
 import DataAccessComponent.ConexionOracleMaster;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -49,7 +51,7 @@ public class ModificadorVentaController {
     }
 
     @FXML
-    void guardarVenta() {
+    void guardarVenta(ActionEvent event) {
         try(Connection conn = ConexionOracleMaster.getConnection()){
             String sql = "UPDATE VENTAS SET ID_TIENDA = ?, CLIENTE_ID = ?, FECHA = ?, TOTAL = ? WHERE VENTA_ID = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -62,7 +64,8 @@ public class ModificadorVentaController {
             int filas = ps.executeUpdate();
             if(filas > 0){
                 mostrarAlerta("Venta actualizada correctamente", Alert.AlertType.INFORMATION);
-                regresar();
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionVenta.fxml", "Gestión de Ventas");
             } else {
                 mostrarAlerta("Error al actualizar venta", Alert.AlertType.ERROR);
             }
@@ -73,8 +76,9 @@ public class ModificadorVentaController {
     }
 
     @FXML
-    void regresar() {
-        ((Stage) btnGuardar1.getScene().getWindow()).close();
+    void regresar(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionVenta.fxml", "Gestión de Ventas");
     }
 
     private void mostrarAlerta(String mensaje, Alert.AlertType type) {

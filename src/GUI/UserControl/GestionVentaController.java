@@ -1,20 +1,16 @@
 package GUI.UserControl;
 
 import DataAccessComponent.ConexionOracleMaster;
-import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
@@ -89,15 +85,17 @@ public class GestionVentaController {
     }
 
     @FXML
-    void agregarNuevoVenta() throws Exception {
-        abrirVentana("GUI/Interfaz/FormularioVentas.fxml", "Registrar Venta");
+    void agregarNuevoVenta(ActionEvent event) throws Exception {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage,"/GUI/Interfaz/FormularioVentas.fxml", "Registrar Venta");
     }
 
     @FXML
-    void editarVenta() throws Exception {
+    void editarVenta(ActionEvent event) throws Exception {
         ventaSeleccionada = tablaVentas.getSelectionModel().getSelectedItem();
         if (ventaSeleccionada != null) {
-            abrirVentana("GUI/Interfaz/ModificadorVenta.fxml", "Modificar Venta");
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/ModificadorVenta.fxml", "Modificar Venta");
         } else {
             mostrarAlerta("Seleccione una venta para editar", Alert.AlertType.WARNING);
         }
@@ -120,16 +118,9 @@ public class GestionVentaController {
     }
 
     @FXML
-    void regresar() {
-        ((Stage) btnEliminar1.getScene().getWindow()).close();
-    }
-    private void abrirVentana(String fxml, String titulo) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxml));
-        Stage stage = new Stage();
-        stage.setTitle(titulo);
-        stage.setScene(new Scene(root));
-        stage.showAndWait();
-        cargarDatos();
+    void regresar(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/MenuPrincipal.fxml", "Proyecto: Menu Principal");
     }
 
     private void mostrarAlerta(String mensaje, Alert.AlertType type) {

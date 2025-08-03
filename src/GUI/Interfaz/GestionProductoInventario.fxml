@@ -17,7 +17,7 @@
         </top>
 
         <center>
-            <TableView fx:id="tablaProductoInventario">
+            <TableView fx:id="tablaClientes">
                 <columns>
                     <TableColumn fx:id="colIdProducto" text="ID Producto" />
                     <TableColumn fx:id="colIdInventario" text="ID Inventario" />

@@ -1,7 +1,9 @@
 package GUI.UserControl;
 
 import DataAccessComponent.ConexionOracleMaster;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -38,7 +40,7 @@ public class ModificadorInventarioController {
     }
 
     @FXML
-    void guardarInventario() {
+    void guardarInventario(ActionEvent event) {
         try (Connection conn = ConexionOracleMaster.getConnection()) {
             String sql = "UPDATE INVENTARIO SET ID_TIENDA = ?, CANTIDAD = ? WHERE INVENTARIO_ID = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -50,7 +52,8 @@ public class ModificadorInventarioController {
             int filas = ps.executeUpdate();
             if (filas > 0) {
                 mostrarAlerta("Inventario actualizado correctamente", Alert.AlertType.INFORMATION);
-                regresar();
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionInventario.fxml", "Gestión del Inventario");
             } else {
                 mostrarAlerta("No se pudo actualizar el inventario", Alert.AlertType.ERROR);
             }
@@ -61,8 +64,9 @@ public class ModificadorInventarioController {
     }
 
     @FXML
-    void regresar() {
-        ((Stage) btnGuardar1.getScene().getWindow()).close();
+    void regresar(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionInventario.fxml", "Gestión del Inventario");
     }
 
     private void mostrarAlerta(String mensaje, Alert.AlertType type) {

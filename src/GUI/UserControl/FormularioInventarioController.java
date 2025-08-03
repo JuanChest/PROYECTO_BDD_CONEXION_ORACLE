@@ -1,7 +1,9 @@
 package GUI.UserControl;
 
 import DataAccessComponent.ConexionOracleMaster;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -28,7 +30,7 @@ public class FormularioInventarioController {
     private TextField txtInventarioID;
 
     @FXML
-    void guardarInventario() {
+    void guardarInventario(ActionEvent event) {
         try (Connection conn = ConexionOracleMaster.getConnection()) {
             String sql = "INSERT INTO INVENTARIO (INVENTARIO_ID, ID_TIENDA, CANTIDAD) VALUES (?, ?, ?)";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -39,7 +41,8 @@ public class FormularioInventarioController {
 
             ps.executeUpdate();
             mostrarAlerta("Inventario registrado correctamente", Alert.AlertType.INFORMATION);
-            regresar();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionInventario.fxml", "Gestión del Inventario");
         } catch (Exception e) {
             e.printStackTrace();
             mostrarAlerta("Error al registrar inventario: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -47,8 +50,9 @@ public class FormularioInventarioController {
     }
 
     @FXML
-    void regresar() {
-        ((Stage) btnGuardar1.getScene().getWindow()).close();
+    void regresar(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionInventario.fxml", "Gestión del Inventario");
     }
 
     private void mostrarAlerta(String mensaje, Alert.AlertType type) {

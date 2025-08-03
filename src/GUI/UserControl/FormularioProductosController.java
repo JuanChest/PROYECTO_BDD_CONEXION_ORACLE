@@ -3,6 +3,7 @@ package GUI.UserControl;
 import DataAccessComponent.ConexionOracleMaster;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -35,7 +36,7 @@ public class FormularioProductosController {
     private TextField txtProveedorID;
 
     @FXML
-    void guardarProducto() {
+    void guardarProducto(ActionEvent event) {
         try (Connection conn = ConexionOracleMaster.getConnection()) {
             String sql = "INSERT INTO PRODUCTO (PRODUCTO_ID, PROVEEDOR_ID, CATEGORIA_ID, NOMBRE, PRECIO) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -47,15 +48,17 @@ public class FormularioProductosController {
             ps.executeUpdate();
 
             mostrarAlerta("Producto ingresado correctamente", Alert.AlertType.INFORMATION);
-            regresar();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionProducto.fxml", "Gestión de Productos");
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
     @FXML
-    void regresar() {
-        ((Stage) btnGuardar1.getScene().getWindow()).close();
+    void regresar(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionProducto.fxml", "Gestión de Productos");
     }
     private void mostrarAlerta(String mensaje, Alert.AlertType type) {
         Alert alert = new Alert(type);

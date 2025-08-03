@@ -1,7 +1,9 @@
 package GUI.UserControl;
 
 import DataAccessComponent.ConexionOracleMaster;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -35,7 +37,7 @@ public class FormularioVentasController {
     private TextField txtVentaID;
 
     @FXML
-    void guardarVentas() {
+    void guardarVentas(ActionEvent event) {
         try(Connection conn = ConexionOracleMaster.getConnection()){
             String sql = "INSERT INTO VENTAS(VENTA_ID, ID_TIENDA, CLIENTE_ID, FECHA, TOTAL) VALUES(?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -48,7 +50,8 @@ public class FormularioVentasController {
             ps.executeUpdate();
 
             mostrarAlerta("Venta registrada correctamente", Alert.AlertType.INFORMATION);
-            regresar();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionVenta.fxml", "Gestión de Ventas");
         } catch (Exception e){
             e.printStackTrace();
             mostrarAlerta("Error al registrar la venta", Alert.AlertType.ERROR);
@@ -56,8 +59,9 @@ public class FormularioVentasController {
     }
 
     @FXML
-    void regresar() {
-        ((Stage) btnGuardar1.getScene().getWindow()).close();
+    void regresar(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionVenta.fxml", "Gestión de Ventas");
     }
     private void mostrarAlerta(String mensaje, Alert.AlertType type) {
         Alert alert = new Alert(type);

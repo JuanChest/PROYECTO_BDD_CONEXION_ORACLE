@@ -11,8 +11,8 @@
 
         <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Producto - Inventario" textFill="WHITE" />
 
-        <TextField fx:id="txtIdProducto" promptText="Id_Producto" />
-      <TextField fx:id="txtIdInventario" promptText="Id_Inventario" />
+        <TextField fx:id="txtId" promptText="Id_Producto" />
+      <TextField fx:id="txtId1" promptText="Id_Inventario" />
 
         <Button fx:id="btnGuardar" onAction="#guardarProductoInventario" style="-fx-background-color: #20dad8; -fx-text-fill: white;" text="Guardar" />
 

@@ -6,9 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
@@ -86,15 +84,17 @@ public class GestionProductoController {
     }
 
     @FXML
-    void agregarNuevoProducto() throws Exception {
-        abrirVentana("GUI/Interfaz/FormularioProductos.fxml", "Registrar Producto");
+    void agregarNuevoProducto(ActionEvent event) throws Exception {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/FormularioProductos.fxml", "Agregar Nuevo Producto");
     }
 
     @FXML
-    void editarProducto() throws Exception {
+    void editarProducto(ActionEvent event) throws Exception {
         productoSeleccionado = tablaProductos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado != null) {
-            abrirVentana("GUI/Interfaz/ModificadorProducto.fxml", "Modificar Producto");
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/ModificadorProducto.fxml", "Editar Producto");
         } else {
             mostrarAlerta("Seleccione un producto para editar", Alert.AlertType.WARNING);
         }
@@ -117,18 +117,11 @@ public class GestionProductoController {
     }
 
     @FXML
-    void regresar() {
-        ((Stage) btnEliminar1.getScene().getWindow()).close();
+    void regresar(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/MenuPrincipal.fxml", "Proyecto: Menu Principal");
+    }
 
-    }
-    private void abrirVentana(String fxml, String titulo) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxml));
-        Stage stage = new Stage();
-        stage.setTitle(titulo);
-        stage.setScene(new Scene(root));
-        stage.showAndWait();
-        cargarDatos(); // refrescar tabla después de cerrar
-    }
     private void mostrarAlerta(String mensaje, Alert.AlertType type) {
         Alert alert = new Alert(type);
         alert.setContentText(mensaje);

@@ -4,10 +4,9 @@ import DataAccessComponent.ConexionOracleMaster;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
@@ -78,15 +77,17 @@ public class GestionInventarioController {
     }
 
     @FXML
-    void agregarNuevoInventario() throws Exception {
-        abrirVentana("GUI/Interfaz/FormularioInventario.fxml", "Registrar Inventario");
+    void agregarNuevoInventario(ActionEvent event) throws Exception {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/FormularioInventario.fxml", "Formulario de Inventario");
     }
 
     @FXML
-    void editarInventario() throws Exception {
+    void editarInventario(ActionEvent event) throws Exception {
         inventarioSeleccionado = tablaInventario.getSelectionModel().getSelectedItem();
         if (inventarioSeleccionado != null) {
-            abrirVentana("GUI/Interfaz/ModificadorInventario.fxml", "Modificar Inventario");
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/ModificadorInventario.fxml", "Editar Inventario");
         } else {
             mostrarAlerta("Seleccione un inventario para editar", Alert.AlertType.WARNING);
         }
@@ -109,17 +110,9 @@ public class GestionInventarioController {
     }
 
     @FXML
-    void regresar() {
-        ((Stage) btnEliminar1.getScene().getWindow()).close();
-    }
-
-    private void abrirVentana(String fxml, String titulo) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxml));
-        Stage stage = new Stage();
-        stage.setTitle(titulo);
-        stage.setScene(new Scene(root));
-        stage.showAndWait();
-        cargarDatos(); // refrescar tabla al cerrar
+    void regresar(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/MenuPrincipal.fxml", "Proyecto: Menu Principal");
     }
 
     private void mostrarAlerta(String mensaje, Alert.AlertType type) {
