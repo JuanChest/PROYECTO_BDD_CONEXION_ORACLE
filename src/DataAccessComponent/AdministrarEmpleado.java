@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AdministrarEmpleado {
-    public static void insertar(int id, int idTienda, String nombre, String apellido, String cargo) {
+    public static void insertar(int idTienda, String nombre, String apellido, String cargo) {
         try (Connection conn = ConexionOracleMaster.getConnection()) {
             String sql = "INSERT INTO EMPLEADO (ID_TIENDA, NOMBRE, APELLIDO, CARGO) VALUES (?, ?, ?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {

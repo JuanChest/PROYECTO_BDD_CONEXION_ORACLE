@@ -33,12 +33,11 @@ public class AdministrarRegion {
     }
 
 
-    public static void insertar(int id, String nombreRegion) {
+    public static void insertar(String nombreRegion) {
         try (Connection conn = ConexionOracleMaster.getConnection()) {
-            String sql = "INSERT INTO REGION (REGION_ID, NOMBRE_REGION) VALUES (?, ?)";
+            String sql = "INSERT INTO REGION (NOMBRE_REGION) VALUES (?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, id);
-                stmt.setString(2, nombreRegion);
+                stmt.setString(1, nombreRegion);
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {

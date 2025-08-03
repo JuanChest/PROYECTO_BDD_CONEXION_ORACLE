@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AdministrarProveedor {
-    public static void insertar(int id, String nombre, String email, String telefono) {
+    public static void insertar(String nombre, String email, String telefono) {
         try (Connection conn = ConexionOracleMaster.getConnection()) {
             String sql = "INSERT INTO PROVEEDOR (NOMBRE, EMAIL, TELEFONO) VALUES (?, ?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {

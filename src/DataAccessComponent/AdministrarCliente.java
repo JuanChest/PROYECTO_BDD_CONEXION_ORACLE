@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 public class AdministrarCliente {
-    public static void insertar(int id, String nombre, String apellido, String email, String telefono) {
+    public static void insertar(String nombre, String apellido, String email, String telefono) {
         try (Connection conn = ConexionOracleMaster.getConnection()) {
-            String sql = "INSERT INTO CLIENTE (, NOMBRE, APELLIDO, EMAIL, TELEFONO) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO CLIENTE (NOMBRE, APELLIDO, EMAIL, TELEFONO) VALUES (?, ?, ?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, nombre);
                 stmt.setString(2, apellido);

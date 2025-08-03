@@ -10,14 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 public class AdministrarTienda {
-    public static void insertar(int idTienda, int regionId, String nombre, String direccion) {
+    public static void insertar(int regionId, String nombre, String direccion) {
         try (Connection conn = ConexionOracleMaster.getConnection()) {
-            String sql = "INSERT INTO TIENDA (ID_TIENDA, REGION_ID, NOMBRE, DIRECCION) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO TIENDA (REGION_ID, NOMBRE, DIRECCION) VALUES (?, ?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, idTienda);
-                stmt.setInt(2, regionId);
-                stmt.setString(3, nombre);
-                stmt.setString(4, direccion);
+                stmt.setInt(1, regionId);
+                stmt.setString(2, nombre);
+                stmt.setString(3, direccion);
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
