@@ -51,6 +51,23 @@ public class GestionProveedorController {
         colTelefono.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(3)));
 
         tablaClientes.setItems(AdministrarProveedor.obtenerTodos());
+        ajustarInterfazPorConexion();
+    }
+
+    private void ajustarInterfazPorConexion() {
+        System.out.println("Tipo de conexión actual: " + Util.ContextoConexion.getTipoConexion());
+
+        if (Util.ContextoConexion.getTipoConexion() == Util.ContextoConexion.TipoConexion.REMOTO) {
+            System.out.println("Modo REMOTO: Ocultando botones");
+            btnAgregar.setVisible(false);
+            btnEditar.setVisible(false);
+            btnEliminar.setVisible(false);
+        } else {
+            System.out.println("Modo MASTER: Mostrando botones");
+            btnAgregar.setVisible(true);
+            btnEditar.setVisible(true);
+            btnEliminar.setVisible(true);
+        }
     }
 
     @FXML

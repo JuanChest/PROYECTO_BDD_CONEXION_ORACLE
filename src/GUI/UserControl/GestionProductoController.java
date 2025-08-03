@@ -78,8 +78,25 @@ public class GestionProductoController {
             colPrecio.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
 
             tablaProductos.setItems(data);
+            ajustarInterfazPorConexion();
         } catch (SQLException e){
             e.printStackTrace();
+        }
+    }
+
+    private void ajustarInterfazPorConexion() {
+        System.out.println("Tipo de conexión actual: " + Util.ContextoConexion.getTipoConexion());
+
+        if (Util.ContextoConexion.getTipoConexion() == Util.ContextoConexion.TipoConexion.REMOTO) {
+            System.out.println("Modo REMOTO: Ocultando botones");
+            btnAgregar.setVisible(false);
+            btnEditar.setVisible(false);
+            btnEliminar.setVisible(false);
+        } else {
+            System.out.println("Modo MASTER: Mostrando botones");
+            btnAgregar.setVisible(true);
+            btnEditar.setVisible(true);
+            btnEliminar.setVisible(true);
         }
     }
 
