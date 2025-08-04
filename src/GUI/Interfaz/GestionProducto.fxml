@@ -20,8 +20,7 @@
             <TableView fx:id="tablaProductos">
                 <columns>
                     <TableColumn fx:id="colIdProducto" text="ID Producto" />
-                    <TableColumn fx:id="colIdProveedor" text="ID Proveedor" />
-                    <TableColumn fx:id="colIdCategoria" text="ID Categoria" />
+                    <TableColumn fx:id="colProveedorId" text="ID Proveedor" />
                     <TableColumn fx:id="colNombre" text="Nombre" />
                <TableColumn fx:id="colPrecio" text="Precio" />
                 </columns>

@@ -1,16 +1,18 @@
 package GUI.UserControl;
 
+import DataAccessComponent.AdministrarProducto;
 import DataAccessComponent.ConexionOracleMaster;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class FormularioProductosController {
 
@@ -21,7 +23,10 @@ public class FormularioProductosController {
     private Button btnGuardar1;
 
     @FXML
-    private TextField txtCategoriaID;
+    private TextField txtProductoID;
+
+    @FXML
+    private TextField txtProveedorID;
 
     @FXML
     private TextField txtNombre;
@@ -30,27 +35,50 @@ public class FormularioProductosController {
     private TextField txtPrecio;
 
     @FXML
-    private TextField txtProductoID;
+    public void initialize() {
+        txtProductoID.setEditable(false);
+        cargarSiguienteID();
+    }
 
-    @FXML
-    private TextField txtProveedorID;
+    private void cargarSiguienteID() {
+        try (Connection conn = ConexionOracleMaster.getConnection()) {
+            String sql = "SELECT MAX(PRODUCTO_ID) AS MAX_ID FROM PRODUCTO";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    int maxId = rs.getInt("MAX_ID");
+                    txtProductoID.setText(String.valueOf(maxId + 1));
+                } else {
+                    txtProductoID.setText("1");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            txtProductoID.setText("1");
+        }
+    }
 
     @FXML
     void guardarProducto(ActionEvent event) {
-        try (Connection conn = ConexionOracleMaster.getConnection()) {
-            String sql = "INSERT INTO PRODUCTO (PRODUCTO_ID, PROVEEDOR_ID, CATEGORIA_ID, NOMBRE, PRECIO) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, Integer.parseInt(txtProductoID.getText()));
-            ps.setInt(2, Integer.parseInt(txtProveedorID.getText()));
-            ps.setInt(3, Integer.parseInt(txtCategoriaID.getText()));
-            ps.setString(4, txtNombre.getText());
-            ps.setDouble(5, Double.parseDouble(txtPrecio.getText()));
-            ps.executeUpdate();
+        try {
+            int id = Integer.parseInt(txtProductoID.getText());
+            int proveedorId = Integer.parseInt(txtProveedorID.getText());
+            String nombre = txtNombre.getText();
+            double precio = Double.parseDouble(txtPrecio.getText().replace(",", "."));
 
-            mostrarAlerta("Producto ingresado correctamente", Alert.AlertType.INFORMATION);
+            if (nombre.isEmpty()) {
+                System.out.println("Por favor, complete todos los campos.");
+                return;
+            }
+
+            AdministrarProducto.insertar(id, proveedorId, nombre, precio);
+
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionProducto.fxml", "Gestión de Productos");
-        } catch (Exception e){
+
+        } catch (NumberFormatException e) {
+            System.out.println("Datos numéricos inválidos.");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -59,10 +87,5 @@ public class FormularioProductosController {
     void regresar(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionProducto.fxml", "Gestión de Productos");
-    }
-    private void mostrarAlerta(String mensaje, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
     }
 }

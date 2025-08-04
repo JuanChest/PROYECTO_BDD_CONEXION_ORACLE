@@ -1,0 +1,20 @@
+-- Usuario Master
+create user tiendasMaster identified by tiendasmaster
+default tablespace users
+temporary tablespace temp
+profile default;
+
+grant connect, resource to tiendasMaster; 
+alter user tiendasMaster quota unlimited on users;
+grant connect, create database link to tiendasMaster;
+
+-- Usuario tiendasNorte
+create user tiendasNorte identified by tiendasnorte
+default tablespace users
+temporary tablespace temp
+profile default;
+
+grant connect, resource to tiendasNorte; 
+alter user tiendasNorte quota unlimited on users;
+grant connect, create database link to tiendasNorte;
+

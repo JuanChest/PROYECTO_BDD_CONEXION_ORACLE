@@ -13,7 +13,6 @@
 
         <TextField fx:id="txtProductoID" promptText="Producto_ID" />
         <TextField fx:id="txtProveedorID" promptText="Proveedor_ID" />
-        <TextField fx:id="txtCategoriaID" promptText="Categoria_ID" />
         <TextField fx:id="txtNombre" promptText="Nombre" />
         <TextField fx:id="txtPrecio" promptText="Precio" />
 

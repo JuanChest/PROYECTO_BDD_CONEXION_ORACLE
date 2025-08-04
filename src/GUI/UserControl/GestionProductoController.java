@@ -1,22 +1,20 @@
 package GUI.UserControl;
 
-import DataAccessComponent.ConexionOracleMaster;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.FXCollections;
+import DataAccessComponent.AdministrarProducto;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.IOException;
 
 public class GestionProductoController {
 
@@ -33,13 +31,10 @@ public class GestionProductoController {
     private Button btnEliminar1;
 
     @FXML
-    private TableColumn<ObservableList<String>, String> colIdCategoria;
-
-    @FXML
     private TableColumn<ObservableList<String>, String> colIdProducto;
 
     @FXML
-    private TableColumn<ObservableList<String>, String> colIdProveedor;
+    private TableColumn<ObservableList<String>, String> colProveedorId;
 
     @FXML
     private TableColumn<ObservableList<String>, String> colNombre;
@@ -50,50 +45,23 @@ public class GestionProductoController {
     @FXML
     private TableView<ObservableList<String>> tablaProductos;
 
-    public static ObservableList<String> productoSeleccionado;
     @FXML
     public void initialize() {
-        cargarDatos();
-    }
-    private void cargarDatos() {
-        ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
-        try(Connection conn = ConexionOracleMaster.getConnection()){
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT PRODUCTO_ID, PROVEEDOR_ID, CATEGORIA_ID, NOMBRE, PRECIO FROM PRODUCTO ORDER BY PRODUCTO_ID");
+        colIdProducto.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(0)));
+        colProveedorId.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(1)));
+        colNombre.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(2)));
+        colPrecio.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(3)));
 
-            while(rs.next()){
-                ObservableList<String> row = FXCollections.observableArrayList();
-                row.add(rs.getString("PRODUCTO_ID"));
-                row.add(rs.getString("PROVEEDOR_ID"));
-                row.add(rs.getString("CATEGORIA_ID"));
-                row.add(rs.getString("NOMBRE"));
-                row.add(rs.getString("PRECIO"));
-                data.add(row);
-            }
-
-            colIdProducto.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
-            colIdProveedor.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
-            colIdCategoria.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
-            colNombre.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(3)));
-            colPrecio.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
-
-            tablaProductos.setItems(data);
-            ajustarInterfazPorConexion();
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
+        tablaProductos.setItems(AdministrarProducto.obtenerTodos());
+        ajustarInterfazPorConexion();
     }
 
     private void ajustarInterfazPorConexion() {
-        System.out.println("Tipo de conexión actual: " + Util.ContextoConexion.getTipoConexion());
-
         if (Util.ContextoConexion.getTipoConexion() == Util.ContextoConexion.TipoConexion.REMOTO) {
-            System.out.println("Modo REMOTO: Ocultando botones");
             btnAgregar.setVisible(false);
             btnEditar.setVisible(false);
             btnEliminar.setVisible(false);
         } else {
-            System.out.println("Modo MASTER: Mostrando botones");
             btnAgregar.setVisible(true);
             btnEditar.setVisible(true);
             btnEliminar.setVisible(true);
@@ -101,36 +69,52 @@ public class GestionProductoController {
     }
 
     @FXML
-    void agregarNuevoProducto(ActionEvent event) throws Exception {
+    void agregarNuevoProducto(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Ventana.cambiarEscena(stage, "/GUI/Interfaz/FormularioProductos.fxml", "Agregar Nuevo Producto");
     }
 
     @FXML
-    void editarProducto(ActionEvent event) throws Exception {
-        productoSeleccionado = tablaProductos.getSelectionModel().getSelectedItem();
-        if (productoSeleccionado != null) {
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Ventana.cambiarEscena(stage, "/GUI/Interfaz/ModificadorProducto.fxml", "Editar Producto");
-        } else {
-            mostrarAlerta("Seleccione un producto para editar", Alert.AlertType.WARNING);
+    void editarProducto(ActionEvent event) {
+        ObservableList<String> seleccion = tablaProductos.getSelectionModel().getSelectedItem();
+        if (seleccion == null) {
+            System.out.println("Por favor, seleccione un producto para editar.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Interfaz/ModificadorProducto.fxml"));
+            Parent root = loader.load();
+
+            ModificadorProductoController controladorEditar = loader.getController();
+            controladorEditar.recibirDatos(
+                    seleccion.get(0), // PRODUCTO_ID
+                    seleccion.get(1), // PROVEEDOR_ID
+                    seleccion.get(2), // NOMBRE
+                    seleccion.get(3)  // PRECIO
+            );
+
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Modificación de Producto");
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     @FXML
-    void eliminarProducto() {
-        ObservableList<String> seleccionado = tablaProductos.getSelectionModel().getSelectedItem();
-        if (seleccionado != null) {
-            try(Connection conn = ConexionOracleMaster.getConnection()) {
-                Statement stmt = conn.createStatement();
-                stmt.executeUpdate("DELETE FROM PRODUCTO WHERE PRODUCTO_ID = " + seleccionado.get(0));
-                cargarDatos();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-        } else {
-            mostrarAlerta("Seleccione un producto para eliminar", Alert.AlertType.WARNING);
+    void eliminarProducto(ActionEvent event) {
+        ObservableList<String> seleccion = tablaProductos.getSelectionModel().getSelectedItem();
+        if (seleccion == null) {
+            System.out.println("Por favor, seleccione un producto para eliminar.");
+            return;
         }
+
+        int productoId = Integer.parseInt(seleccion.get(0));
+        AdministrarProducto.eliminar(productoId);
+        tablaProductos.setItems(AdministrarProducto.obtenerTodos());
     }
 
     @FXML
@@ -138,11 +122,4 @@ public class GestionProductoController {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Ventana.cambiarEscena(stage, "/GUI/Interfaz/MenuPrincipal.fxml", "Proyecto: Menu Principal");
     }
-
-    private void mostrarAlerta(String mensaje, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
-    }
-
 }

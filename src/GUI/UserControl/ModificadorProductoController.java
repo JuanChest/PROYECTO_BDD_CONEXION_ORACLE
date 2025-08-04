@@ -1,16 +1,12 @@
 package GUI.UserControl;
 
-import DataAccessComponent.ConexionOracleMaster;
+import DataAccessComponent.AdministrarProducto;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 public class ModificadorProductoController {
 
@@ -21,13 +17,10 @@ public class ModificadorProductoController {
     private Button btnGuardar1;
 
     @FXML
-    private TextField txtId;
+    private TextField txtProductoID;
 
     @FXML
-    private TextField txtId1;
-
-    @FXML
-    private TextField txtId2;
+    private TextField txtProveedorID;
 
     @FXML
     private TextField txtNombre;
@@ -35,53 +28,42 @@ public class ModificadorProductoController {
     @FXML
     private TextField txtPrecio;
 
-    @FXML
-    public void initialize() {
-        if(GestionProductoController.productoSeleccionado != null) {
-            txtId.setText(GestionProductoController.productoSeleccionado.get(0));
-            txtId1.setText(GestionProductoController.productoSeleccionado.get(1));
-            txtId2.setText(GestionProductoController.productoSeleccionado.get(2));
-            txtNombre.setText(GestionProductoController.productoSeleccionado.get(3));
-            txtPrecio.setText(GestionProductoController.productoSeleccionado.get(4));
-            txtId.setDisable(true);
-        }
+    public void recibirDatos(String id, String proveedorId, String nombre, String precio) {
+        txtProductoID.setText(id);
+        txtProductoID.setEditable(false);
+        txtProveedorID.setText(proveedorId);
+        txtNombre.setText(nombre);
+        txtPrecio.setText(precio);
     }
 
     @FXML
     void guardarProducto(ActionEvent event) {
-        try(Connection conn = ConexionOracleMaster.getConnection()){
-            String sql = "UPDATE PRODUCTO SET PROVEEDOR_ID = ?, CATEGORIA_ID = ?, NOMBRE = ?, PRECIO = ? WHERE PRODUCTO_ID = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1,Integer.parseInt(txtId1.getText()));
-            ps.setInt(2,Integer.parseInt(txtId2.getText()));
-            ps.setString(3,txtNombre.getText());
-            ps.setString(4,txtPrecio.getText());
-            ps.setInt(5,Integer.parseInt(txtId.getText()));
+        try {
+            int id = Integer.parseInt(txtProductoID.getText());
+            int proveedorId = Integer.parseInt(txtProveedorID.getText());
+            String nombre = txtNombre.getText();
+            double precio = Double.parseDouble(txtPrecio.getText().replace(",", "."));
 
-            int filas = ps.executeUpdate();
-            if(filas > 0) {
-                mostrarAlerta("Producto actualizado", Alert.AlertType.INFORMATION);
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionProducto.fxml", "Gestión de Productos");
-            } else {
-                mostrarAlerta("No se pudo actualizar producto", Alert.AlertType.ERROR);
+            if (nombre.isEmpty()) {
+                System.out.println("Por favor, complete todos los campos.");
+                return;
             }
-        } catch (Exception e){
+
+            AdministrarProducto.actualizar(id, proveedorId, nombre, precio);
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionProducto.fxml", "Gestión de Productos");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Datos numéricos inválidos.");
+        } catch (Exception e) {
             e.printStackTrace();
-            mostrarAlerta("Error al actualizar producto", Alert.AlertType.ERROR);
         }
     }
 
     @FXML
     void regresar(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionProducto.fxml", "Gestión de Productos");    
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionProducto.fxml", "Gestión de Productos");
     }
-
-    private void mostrarAlerta(String mensaje, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
-    }
-
 }

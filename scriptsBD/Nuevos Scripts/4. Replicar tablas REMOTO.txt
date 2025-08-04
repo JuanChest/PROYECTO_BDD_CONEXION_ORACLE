@@ -1,0 +1,42 @@
+/*==============================================================*/
+/* Replicación de tablas globales desde MASTER a REMOTO         */
+/* Refresh automático cada 1 minuto                             */
+/*==============================================================*/
+
+-- Primero dar permisos al REMOTO (ejecutar como system)
+GRANT SELECT ON PRODUCTO TO tiendasNorte;
+GRANT SELECT ON CLIENTE TO tiendasNorte;
+GRANT SELECT ON PROVEEDOR TO tiendasNorte;
+GRANT CREATE MATERIALIZED VIEW TO tiendasNorte;
+GRANT CREATE TABLE TO tiendasNorte;
+GRANT CREATE JOB TO tiendasNorte;
+
+-- 1️⃣ PRODUCTO
+CREATE MATERIALIZED VIEW PRODUCTO_REPLICA
+BUILD IMMEDIATE
+REFRESH COMPLETE
+START WITH SYSDATE
+NEXT SYSDATE + 1/1440  -- refrescar cada minuto
+AS
+SELECT *
+FROM PRODUCTO@db_link_master;
+
+-- 2️⃣ PROVEEDOR
+CREATE MATERIALIZED VIEW PROVEEDOR_REPLICA
+BUILD IMMEDIATE
+REFRESH COMPLETE
+START WITH SYSDATE
+NEXT SYSDATE + 1/1440
+AS
+SELECT *
+FROM PROVEEDOR@db_link_master;
+
+-- 3️⃣ CLIENTE
+CREATE MATERIALIZED VIEW CLIENTE_REPLICA
+BUILD IMMEDIATE
+REFRESH COMPLETE
+START WITH SYSDATE
+NEXT SYSDATE + 1/1440
+AS
+SELECT *
+FROM CLIENTE@db_link_master;
