@@ -24,6 +24,9 @@ public class ModificadorInventarioController {
     private TextField txtCantidad;
 
     @FXML
+    private TextField txtIdProducto;
+
+    @FXML
     private TextField txtId;
 
     @FXML
@@ -73,5 +76,13 @@ public class ModificadorInventarioController {
         Alert alert = new Alert(type);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+
+    public void recibirDatos(String id, String idTienda, String idProducto,String cantidad) {
+        txtId.setText(id);
+        txtId.setEditable(false);
+        txtIdTienda.setText(idTienda);
+        txtIdProducto.setText(idProducto);
+        txtCantidad.setText(cantidad);
     }
 }

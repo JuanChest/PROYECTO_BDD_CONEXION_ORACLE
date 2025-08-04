@@ -1,12 +1,12 @@
 package GUI.UserControl;
 
-import DataAccessComponent.ConexionOracleMaster;
+import DataAccessComponent.AdministrarDetalleVenta;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -14,10 +14,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class GestionDetalleVentaController {
 
@@ -56,42 +52,19 @@ public class GestionDetalleVentaController {
 
     public static ObservableList<String> detalleSeleccionado;
 
-    @FXML public void initialize() {
-        cargarDatos();
+    @FXML 
+    public void initialize() {
+        colIdVenta.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(0)));
+        colIdDetalle.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(1)));
+        colIdProducto.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(2)));
+        colCantidad.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(3)));
+        colPrecioUnitario.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(4)));
+        colSubtotal.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(5)));
+
+        tablaDetalles.setItems(AdministrarDetalleVenta.obtenerTodos());
+        ajustarInterfazPorConexion();
     }
-    public void cargarDatos() {
-        ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
-        try (Connection conn = ConexionOracleMaster.getConnection()) {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(
-                    "SELECT VENTA_ID, DETALLE_ID, PRODUCTO_ID, CANTIDAD, PRECIO_UNITARIO, SUB_TOTAL " +
-                            "FROM DETALLE_VENTA ORDER BY VENTA_ID, DETALLE_ID");
-
-            while (rs.next()) {
-                ObservableList<String> row = FXCollections.observableArrayList();
-                row.add(rs.getString("VENTA_ID"));
-                row.add(rs.getString("DETALLE_ID"));
-                row.add(rs.getString("PRODUCTO_ID"));
-                row.add(rs.getString("CANTIDAD"));
-                row.add(rs.getString("PRECIO_UNITARIO"));
-                row.add(rs.getString("SUB_TOTAL"));
-                data.add(row);
-            }
-
-            colIdVenta.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
-            colIdDetalle.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
-            colIdProducto.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
-            colCantidad.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(3)));
-            colPrecioUnitario.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
-            colSubtotal.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(5)));
-
-            tablaDetalles.setItems(data);
-            ajustarInterfazPorConexion();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    
 
     private void ajustarInterfazPorConexion() {
         System.out.println("Tipo de conexión actual: " + Util.ContextoConexion.getTipoConexion());
@@ -110,50 +83,54 @@ public class GestionDetalleVentaController {
     }
 
     @FXML
-    void agregarNuevoDetalleVenta() throws Exception {
-        abrirVentana("GUI/Interfaz/FormularioDetalleVenta.fxml","Registrar Detalle de Venta");
+    void agregarNuevoDetalleVenta(ActionEvent event) throws Exception {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/FormularioDetalleVenta.fxml","Añadir Detalle de Venta");
     }
 
     @FXML
-    void editarDetalleVenta() throws Exception {
-        detalleSeleccionado = tablaDetalles.getSelectionModel().getSelectedItem();
-        if(detalleSeleccionado != null) {
-            abrirVentana("GUI/Interfaz/ModificadorDetalleVenta.fxml", "Modificar Detalle de venta");
-        } else {
-            mostrarAlerta("Seleccione un detalle de venta para editar", Alert.AlertType.WARNING);
-        }
-    }
-
-    @FXML
-    void eliminarDetalleVenta() {
+    void editarDetalleVenta(ActionEvent event) throws Exception {
         ObservableList<String> seleccionada = tablaDetalles.getSelectionModel().getSelectedItem();
-        if(seleccionada != null) {
-            try(Connection conn = ConexionOracleMaster.getConnection()){
-                Statement stmt = conn.createStatement();
-                stmt.executeUpdate("DELETE FROM DETALLE_VENTA WHERE VENTA_ID = " + seleccionada.get(0) + " AND DETALLE_ID = " + seleccionada.get(1));
-
-                cargarDatos();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            mostrarAlerta("Seleccione un detalle de venta para eliminar", Alert.AlertType.WARNING);
+        if (seleccionada == null) {
+            System.out.println("Debe seleccionar un detalle de venta para editar.");
+            return;
         }
 
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Interfaz/ModificadorDetalleVenta.fxml"));
+            Parent root = loader.load();
+            ModificadorDetalleVentaController controller = loader.getController();
+            controller.recibirDatos(seleccionada.get(0), seleccionada.get(1), seleccionada.get(2), seleccionada.get(3), seleccionada.get(4), seleccionada.get(5));
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Modificar Detalle de Venta");
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
-    void regresar() {
-        ((Stage) btnEliminar1.getScene().getWindow()).close();
+    void eliminarDetalleVenta(ActionEvent event) {
+        ObservableList<String> seleccionada = tablaDetalles.getSelectionModel().getSelectedItem();
+        if (seleccionada == null) {
+            mostrarAlerta("Debe seleccionar un detalle de venta para eliminar.", Alert.AlertType.WARNING);
+            return;
+        }
+
+        int ventaId = Integer.parseInt(seleccionada.get(0));
+        int detalleId = Integer.parseInt(seleccionada.get(1));
+        int productoId = Integer.parseInt(seleccionada.get(2));
+        AdministrarDetalleVenta.eliminar(ventaId, detalleId, productoId);
+        tablaDetalles.setItems(AdministrarDetalleVenta.obtenerTodos());
+        mostrarAlerta("Detalle de venta eliminado correctamente.", Alert.AlertType.INFORMATION);
     }
 
-    private void abrirVentana(String fxml, String titulo) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxml));
-        Stage stage = new Stage();
-        stage.setTitle(titulo);
-        stage.setScene(new Scene(root));
-        stage.showAndWait();
-        cargarDatos(); // refrescar tabla
+    @FXML
+    void regresar(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/MenuPrincipal.fxml", "Menu Principal");
+        
     }
 
     private void mostrarAlerta(String mensaje, Alert.AlertType type) {

@@ -9,12 +9,12 @@ public class MainMaster extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // 👉 Aquí defines si estás trabajando con MASTER o REMOTO
+        // Aquí defines si estás trabajando con MASTER o REMOTO
         ContextoConexion.setTipoConexion(ContextoConexion.TipoConexion.MASTER);
 
         Parent root = FXMLLoader.load(getClass().getResource("/GUI/Interfaz/MenuPrincipal.fxml"));
         Scene scene = new Scene(root, 800, 600);
-        primaryStage.setTitle("Proyecto: Menu Principal");
+        primaryStage.setTitle("Proyecto: Menu Principal (Master)");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

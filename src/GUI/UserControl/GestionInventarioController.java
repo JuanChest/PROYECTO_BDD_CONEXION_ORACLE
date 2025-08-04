@@ -1,21 +1,17 @@
 package GUI.UserControl;
 
-import DataAccessComponent.ConexionOracleMaster;
+import DataAccessComponent.AdministrarInventario;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class GestionInventarioController {
 
@@ -38,6 +34,9 @@ public class GestionInventarioController {
     private TableColumn<ObservableList<String>, String> colIdInventario;
 
     @FXML
+    private TableColumn<ObservableList<String>, String> colIdProducto;
+
+    @FXML
     private TableColumn<ObservableList<String>, String> colIdTienda;
 
     @FXML
@@ -47,8 +46,14 @@ public class GestionInventarioController {
 
     @FXML
     public void initialize() {
-        cargarDatos();
+        colIdInventario.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(0)));
+        colIdTienda.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(1)));
+        colIdProducto.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(2)));
+        colCantidad.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(3)));
+
+        tablaInventario.setItems(AdministrarInventario.obtenerTodos());
         ajustarInterfazPorConexion();
+        
     }
 
     private void ajustarInterfazPorConexion() {
@@ -67,32 +72,6 @@ public class GestionInventarioController {
         }
     }
 
-    private void cargarDatos() {
-        ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
-        try (Connection conn = ConexionOracleMaster.getConnection()) {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(
-                    "SELECT INVENTARIO_ID, ID_TIENDA, CANTIDAD FROM INVENTARIO ORDER BY INVENTARIO_ID"
-            );
-
-            while (rs.next()) {
-                ObservableList<String> row = FXCollections.observableArrayList();
-                row.add(rs.getString("INVENTARIO_ID"));
-                row.add(rs.getString("ID_TIENDA"));
-                row.add(rs.getString("CANTIDAD"));
-                data.add(row);
-            }
-
-            colIdInventario.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
-            colIdTienda.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
-            colCantidad.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
-
-            tablaInventario.setItems(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @FXML
     void agregarNuevoInventario(ActionEvent event) throws Exception {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -101,29 +80,43 @@ public class GestionInventarioController {
 
     @FXML
     void editarInventario(ActionEvent event) throws Exception {
-        inventarioSeleccionado = tablaInventario.getSelectionModel().getSelectedItem();
-        if (inventarioSeleccionado != null) {
+        ObservableList<String> filaSeleccionada = tablaInventario.getSelectionModel().getSelectedItem();
+        if (filaSeleccionada == null) {
+            System.out.println("Por favor, seleccione un inventario para editar.");
+            return;
+        }
+            
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Interfaz/ModificadorInventario.fxml"));
+            Parent root = loader.load();
+            ModificadorInventarioController controller = loader.getController();
+            controller.recibirDatos(filaSeleccionada.get(0), filaSeleccionada.get(1), filaSeleccionada.get(2), filaSeleccionada.get(3));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Ventana.cambiarEscena(stage, "/GUI/Interfaz/ModificadorInventario.fxml", "Editar Inventario");
-        } else {
-            mostrarAlerta("Seleccione un inventario para editar", Alert.AlertType.WARNING);
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.setTitle("Modificar Inventario");
+            stage.show();
+        } catch (Exception e) {
+            System.out.println("Error al cargar la ventana de modificación: " + e.getMessage());
         }
     }
 
     @FXML
-    void eliminarInventario() {
-        ObservableList<String> seleccionado = tablaInventario.getSelectionModel().getSelectedItem();
-        if (seleccionado != null) {
-            try (Connection conn = ConexionOracleMaster.getConnection()) {
-                Statement stmt = conn.createStatement();
-                stmt.executeUpdate("DELETE FROM INVENTARIO WHERE INVENTARIO_ID = " + seleccionado.get(0));
-                cargarDatos();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            mostrarAlerta("Seleccione un inventario para eliminar", Alert.AlertType.WARNING);
+    void eliminarInventario(ActionEvent event) {
+        ObservableList<String> filaSeleccionada = tablaInventario.getSelectionModel().getSelectedItem();
+        if (filaSeleccionada == null) {
+            System.out.println("Por favor, seleccione un inventario para eliminar.");
+            return;
         }
+
+        int inventarioId = Integer.parseInt(filaSeleccionada.get(0));
+        try {
+            AdministrarInventario.eliminar(inventarioId);
+            System.out.println("Inventario eliminado correctamente.");
+            tablaInventario.setItems(AdministrarInventario.obtenerTodos());
+        } catch (Exception e) {
+            System.out.println("Error al eliminar el inventario: " + e.getMessage());
+        }
+
     }
 
     @FXML
@@ -132,10 +125,10 @@ public class GestionInventarioController {
         Ventana.cambiarEscena(stage, "/GUI/Interfaz/MenuPrincipal.fxml", "Proyecto: Menu Principal");
     }
 
-    private void mostrarAlerta(String mensaje, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
-    }
+    // private void mostrarAlerta(String mensaje, Alert.AlertType type) {
+    //     Alert alert = new Alert(type);
+    //     alert.setContentText(mensaje);
+    //     alert.showAndWait();
+    // }
 
 }

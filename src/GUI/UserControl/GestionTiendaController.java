@@ -46,8 +46,8 @@ public class GestionTiendaController {
     @FXML
     public void initialize() {
         colIdTienda.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(0)));
-        colNombre.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(1)));
-        colIdRegion.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(2)));
+        colIdRegion.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(1)));
+        colNombre.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(2)));
         colDireccion.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(3)));
 
         tablaClientes.setItems(AdministrarTienda.obtenerTodos());

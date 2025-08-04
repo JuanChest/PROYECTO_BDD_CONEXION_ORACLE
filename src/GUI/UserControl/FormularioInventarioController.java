@@ -1,5 +1,6 @@
 package GUI.UserControl;
 
+import DataAccessComponent.AdministrarInventario;
 import DataAccessComponent.ConexionOracleMaster;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,6 +12,8 @@ import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class FormularioInventarioController {
 
@@ -24,28 +27,55 @@ public class FormularioInventarioController {
     private TextField txtCantidad;
 
     @FXML
+    private TextField txtIdProducto;
+
+    @FXML
     private TextField txtIdTienda;
 
     @FXML
     private TextField txtInventarioID;
 
     @FXML
+    public void initialize() {
+        txtInventarioID.setEditable(false);
+        cargarSiguienteID();
+    }
+
+    private void cargarSiguienteID() {
+        try {
+            Connection conn = ConexionOracleMaster.getConnection();
+            String sql = "SELECT MAX(INVENTARIO_ID) AS MAX_ID FROM INVENTARIO";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    int maxId = rs.getInt("MAX_ID");
+                    txtInventarioID.setText(String.valueOf(maxId + 1));
+                } else {
+                    txtInventarioID.setText("1");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            txtInventarioID.setText("1");
+        }
+    }
+
+    @FXML
     void guardarInventario(ActionEvent event) {
-        try (Connection conn = ConexionOracleMaster.getConnection()) {
-            String sql = "INSERT INTO INVENTARIO (INVENTARIO_ID, ID_TIENDA, CANTIDAD) VALUES (?, ?, ?)";
-            PreparedStatement ps = conn.prepareStatement(sql);
+        try {
+            int id = Integer.parseInt(txtInventarioID.getText());
+            int idTienda = Integer.parseInt(txtIdTienda.getText());
+            int productoId = Integer.parseInt(txtIdProducto.getText());
+            int cantidad = Integer.parseInt(txtCantidad.getText());
 
-            ps.setInt(1, Integer.parseInt(txtInventarioID.getText()));
-            ps.setInt(2, Integer.parseInt(txtIdTienda.getText()));
-            ps.setInt(3, Integer.parseInt(txtCantidad.getText()));
-
-            ps.executeUpdate();
-            mostrarAlerta("Inventario registrado correctamente", Alert.AlertType.INFORMATION);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionInventario.fxml", "Gestión del Inventario");
+            AdministrarInventario.insertar(id, idTienda, productoId, cantidad);
+            mostrarAlerta("Inventario guardado correctamente.", Alert.AlertType.INFORMATION);
+            regresar(event);
+        } catch (NumberFormatException e) {
+            mostrarAlerta("Por favor, ingrese valores válidos.", Alert.AlertType.ERROR);
         } catch (Exception e) {
             e.printStackTrace();
-            mostrarAlerta("Error al registrar inventario: " + e.getMessage(), Alert.AlertType.ERROR);
+            mostrarAlerta("Error al guardar el inventario: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -60,4 +90,5 @@ public class FormularioInventarioController {
         alert.setContentText(mensaje);
         alert.showAndWait();
     }
+
 }

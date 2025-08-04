@@ -13,6 +13,7 @@ public class ConexionOracleMaster {
 
     // URL por defecto (Configurable)
     private static final String URL = URL_LOCAL;
+    // private static final String URL = URL_VPN;
 
     private static final String USER = "tiendasMaster";
     private static final String PASSWORD = "tiendasmaster";

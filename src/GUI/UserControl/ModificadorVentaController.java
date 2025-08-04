@@ -1,6 +1,6 @@
 package GUI.UserControl;
 
-import DataAccessComponent.ConexionOracleMaster;
+import DataAccessComponent.AdministrarVentas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -10,9 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 
 public class ModificadorVentaController {
 
@@ -37,43 +35,61 @@ public class ModificadorVentaController {
     @FXML
     private TextField txtTotal;
 
-    @FXML
-    public void initialize(){
-        if(GestionVentaController.ventaSeleccionada != null){
-            txtId.setText(GestionVentaController.ventaSeleccionada.get(0));
-            txtId1.setText(GestionVentaController.ventaSeleccionada.get(1));
-            txtId2.setText(GestionVentaController.ventaSeleccionada.get(2));
-            txtFecha.setText(GestionVentaController.ventaSeleccionada.get(3));
-            txtTotal.setText(GestionVentaController.ventaSeleccionada.get(4));
-            txtId.setDisable(true);
+    public void recibirDatos(String id, String idTienda, String idCliente, String fecha, String total) {
+        txtId.setText(id);
+        txtId.setEditable(false);
+        txtId1.setText(idTienda);
+        txtId2.setText(idCliente);
+        // Si el string viene como "2022-03-02 00:00:00", cortamos solo la parte de la fecha
+        if (fecha.contains(" ")) {
+            txtFecha.setText(fecha.split(" ")[0]); // Queda solo "2022-03-02"
+        } else {
+            txtFecha.setText(fecha); // Por si ya viene solo con la fecha
         }
 
+        txtTotal.setText(total);
     }
+
+    // @FXML
+    // public void initialize(){
+    //     if(GestionVentaController.ventaSeleccionada != null){
+    //         txtId.setText(GestionVentaController.ventaSeleccionada.get(0));
+    //         txtId1.setText(GestionVentaController.ventaSeleccionada.get(1));
+    //         txtId2.setText(GestionVentaController.ventaSeleccionada.get(2));
+    //         txtFecha.setText(GestionVentaController.ventaSeleccionada.get(3));
+    //         txtTotal.setText(GestionVentaController.ventaSeleccionada.get(4));
+    //         txtId.setDisable(true);
+    //     }
+
+    // }
 
     @FXML
     void guardarVenta(ActionEvent event) {
-        try(Connection conn = ConexionOracleMaster.getConnection()){
-            String sql = "UPDATE VENTAS SET ID_TIENDA = ?, CLIENTE_ID = ?, FECHA = ?, TOTAL = ? WHERE VENTA_ID = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, Integer.parseInt(txtId.getText()));
-            ps.setInt(2, Integer.parseInt(txtId1.getText()));
-            ps.setDate(3, Date.valueOf(txtFecha.getText()));
-            ps.setDouble(4, Double.parseDouble(txtTotal.getText()));
-            ps.setInt(5, Integer.parseInt(txtId.getText()));
+        try {
+            int id = Integer.parseInt(txtId.getText());
+            int idTienda = Integer.parseInt(txtId1.getText());
+            int idCliente = Integer.parseInt(txtId2.getText());
+            System.out.println("Fecha ingresada: '" + txtFecha.getText() + "'");
+            Date fecha = Date.valueOf(txtFecha.getText());
+            double total = Double.parseDouble(txtTotal.getText());
 
-            int filas = ps.executeUpdate();
-            if(filas > 0){
-                mostrarAlerta("Venta actualizada correctamente", Alert.AlertType.INFORMATION);
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionVenta.fxml", "Gestión de Ventas");
-            } else {
-                mostrarAlerta("Error al actualizar venta", Alert.AlertType.ERROR);
+            // Validación opcional si quieres evitar campos en blanco totalmente
+            if (txtFecha.getText().isEmpty() || txtTotal.getText().isEmpty()) {
+                mostrarAlerta("Por favor, complete todos los campos.", Alert.AlertType.WARNING);
+                return;
             }
-        } catch (Exception e){
-            e.printStackTrace();
+
+            AdministrarVentas.actualizar(id, idTienda, idCliente, fecha, total);
+
+            mostrarAlerta("Venta actualizada correctamente.", Alert.AlertType.INFORMATION);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionVenta.fxml", "Gestión de Ventas");
+        } catch (Exception e) {
             mostrarAlerta("Error al actualizar: " + e.getMessage(), Alert.AlertType.ERROR);
+            System.out.println("Error al actualizar la venta: " + e.getMessage());
         }
     }
+
 
     @FXML
     void regresar(ActionEvent event) {

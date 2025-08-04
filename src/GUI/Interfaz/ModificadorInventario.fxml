@@ -13,6 +13,7 @@
 
         <TextField fx:id="txtId" promptText="Id_Inventario" />
         <TextField fx:id="txtIdTienda" promptText="Id_Tienda" />
+      <TextField fx:id="txtIdProducto" promptText="Id_Producto" />
         <TextField fx:id="txtCantidad" promptText="Cantidad" />
 
         <Button fx:id="btnGuardar" onAction="#guardarInventario" style="-fx-background-color: #20dad8; -fx-text-fill: white;" text="Guardar" />

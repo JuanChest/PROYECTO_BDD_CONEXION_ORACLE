@@ -17,6 +17,7 @@
         <Button fx:id="btnProductos" onAction="#entrarGestionProductos" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Productos" />
         <Button fx:id="btnProveedores" onAction="#entrarGestionProveedores" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Proveedores" />
         <Button fx:id="btnClientes" onAction="#entrarClientes" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Clientes" />
+      <Button fx:id="btnDetalleVenta" onAction="#entrarDetalleVenta" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión Detalle-Venta" />
         <Button fx:id="btnAuditar" onAction="#entrarAuditar" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-font-size: 16; -fx-text-fill: white;" text="Auditar" />
     </VBox>
 

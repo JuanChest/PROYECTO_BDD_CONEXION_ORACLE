@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Date;
 
 public class FormularioVentasController {
@@ -35,6 +37,32 @@ public class FormularioVentasController {
 
     @FXML
     private TextField txtVentaID;
+
+    @FXML
+    public void initialize() {
+        txtVentaID.setEditable(false);
+        cargarSiguienteID();
+    }
+
+    private void cargarSiguienteID() {
+        try {
+            Connection conn = ConexionOracleMaster.getConnection();
+            String sql = "SELECT MAX(VENTA_ID) AS MAX_ID FROM VENTAS";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    int maxId = rs.getInt("MAX_ID");
+                    txtVentaID.setText(String.valueOf(maxId + 1));
+                } else {
+                    txtVentaID.setText("1");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            txtVentaID.setText("1");
+        }
+    }
+
 
     @FXML
     void guardarVentas(ActionEvent event) {

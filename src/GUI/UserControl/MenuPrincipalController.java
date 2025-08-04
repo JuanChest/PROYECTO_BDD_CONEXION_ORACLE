@@ -30,6 +30,15 @@ public class MenuPrincipalController {
     private Button btnVentas;
 
     @FXML
+    private Button btnDetalleVenta;
+
+    @FXML
+    void entrarDetalleVenta(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionDetalleVenta.fxml", "Gestión de Detalle de Venta");
+    }
+
+    @FXML
     void entrarAuditoria(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionClientes.fxml", "Gestión de Clientes");
@@ -73,6 +82,8 @@ public class MenuPrincipalController {
 
     @FXML
     void entrarAuditar(ActionEvent actionEvent) {
+        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionAuditoria.fxml", "Gestión de Auditoría");
     }
 
 }

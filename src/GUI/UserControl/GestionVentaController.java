@@ -1,21 +1,19 @@
 package GUI.UserControl;
 
-import DataAccessComponent.ConexionOracleMaster;
+import DataAccessComponent.AdministrarVentas;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class GestionVentaController {
 
@@ -53,36 +51,19 @@ public class GestionVentaController {
 
     @FXML
     public void initialize() {
-        cargarDatos();
-    }
+        colIdVenta.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(0)));
+        colIdTienda.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(1)));
+        colIdCliente.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(2))); 
+        colFecha.setCellValueFactory(data -> {
+            String fechaCompleta = data.getValue().get(3);
+            String fechaSolo = fechaCompleta.contains(" ") ? fechaCompleta.split(" ")[0] : fechaCompleta;
+            return new ReadOnlyObjectWrapper<>(fechaSolo);
+        });
 
-    private void cargarDatos() {
-        ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
-        try (Connection conn = ConexionOracleMaster.getConnection()) {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT VENTA_ID, ID_TIENDA, CLIENTE_ID, TO_CHAR(FECHA, 'YYYY-MM-DD') AS FECHA, TOTAL FROM VENTAS ORDER BY VENTA_ID");
+        colTotal.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(4)));
 
-            while (rs.next()) {
-                ObservableList<String> row = FXCollections.observableArrayList();
-                row.add(rs.getString("VENTA_ID"));
-                row.add(rs.getString("ID_TIENDA"));
-                row.add(rs.getString("CLIENTE_ID"));
-                row.add(rs.getString("FECHA"));
-                row.add(rs.getString("TOTAL"));
-                data.add(row);
-            }
-
-            colIdVenta.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
-            colIdTienda.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
-            colIdCliente.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
-            colFecha.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(3)));
-            colTotal.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(4)));
-
-            tablaVentas.setItems(data);
-            ajustarInterfazPorConexion();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        tablaVentas.setItems(AdministrarVentas.obtenerTodos());
+        ajustarInterfazPorConexion();
     }
 
     private void ajustarInterfazPorConexion() {
@@ -109,29 +90,45 @@ public class GestionVentaController {
 
     @FXML
     void editarVenta(ActionEvent event) throws Exception {
-        ventaSeleccionada = tablaVentas.getSelectionModel().getSelectedItem();
-        if (ventaSeleccionada != null) {
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Ventana.cambiarEscena(stage, "/GUI/Interfaz/ModificadorVenta.fxml", "Modificar Venta");
-        } else {
+        ObservableList<String> ventaSeleccionada = tablaVentas.getSelectionModel().getSelectedItem();
+        if (ventaSeleccionada == null) {
             mostrarAlerta("Seleccione una venta para editar", Alert.AlertType.WARNING);
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Interfaz/ModificadorVenta.fxml"));
+            Parent root = loader.load();
+
+            ModificadorVentaController controller = loader.getController();
+
+            controller.recibirDatos(ventaSeleccionada.get(0), ventaSeleccionada.get(1), 
+                                    ventaSeleccionada.get(2), ventaSeleccionada.get(3), 
+                                    ventaSeleccionada.get(4));
+            
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Modificar Venta");
+            stage.show();
+        }catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @FXML
     void eliminarVenta() {
         ObservableList<String> seleccionada = tablaVentas.getSelectionModel().getSelectedItem();
-        if (seleccionada != null) {
-            try(Connection conn = ConexionOracleMaster.getConnection()){
-                Statement stmt = conn.createStatement();
-                stmt.executeUpdate("DELETE FROM VENTAS WHERE VENTA_ID = '" + seleccionada.get(0) + "'");
-                cargarDatos();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-        } else {
+        if (seleccionada == null) {
             mostrarAlerta("Seleccione una venta para eliminar", Alert.AlertType.WARNING);
+            return;
         }
+
+        int ventaId = Integer.parseInt(seleccionada.get(0));
+        AdministrarVentas.eliminar(ventaId);
+
+        mostrarAlerta("Venta eliminada correctamente", Alert.AlertType.INFORMATION);
+
+        tablaVentas.setItems(AdministrarVentas.obtenerTodos());
     }
 
     @FXML

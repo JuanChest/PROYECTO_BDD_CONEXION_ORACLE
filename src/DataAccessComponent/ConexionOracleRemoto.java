@@ -13,6 +13,7 @@ public class ConexionOracleRemoto {
 
     // URL por defecto (Configurable)
     private static final String URL = URL_LOCAL;
+    // private static final String URL = URL_VPN;
 
     private static final String USER = "tiendasNorte";
     private static final String PASSWORD = "tiendasnorte";

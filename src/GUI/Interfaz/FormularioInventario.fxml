@@ -13,7 +13,8 @@
 
         <TextField fx:id="txtInventarioID" promptText="Inventario_ID" />
         <TextField fx:id="txtIdTienda" promptText="ID_Tienda" />
-        <TextField fx:id="txtCantidad" promptText="Cantidad" />
+        <TextField fx:id="txtIdProducto" promptText="ID_Producto" />
+      <TextField fx:id="txtCantidad" promptText="Cantidad" />
 
     </VBox>
    <Button fx:id="btnGuardar1" layoutX="321.0" layoutY="361.0" onAction="#regresar" style="-fx-background-color: #146686; -fx-text-fill: white;" text="Regresar" />

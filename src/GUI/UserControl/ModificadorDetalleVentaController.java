@@ -1,6 +1,7 @@
 package GUI.UserControl;
 
 import DataAccessComponent.ConexionOracleMaster;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -57,23 +58,29 @@ public class ModificadorDetalleVentaController {
 
     private void calcularSubtotal() {
         try {
-            int cantidad = Integer.parseInt(txtCantidad.getText());
-            double precio = Double.parseDouble(txtPrecioUnitario.getText());
+            String txtCant = txtCantidad.getText();
+            String txtPrec = txtPrecioUnitario.getText();
+            // System.out.println("txtCantidad: '" + txtCant + "', txtPrecioUnitario: '" + txtPrec + "'");
+            
+            double cantidad = Double.parseDouble(txtCant);
+            double precio = Double.parseDouble(txtPrec);
             double subtotal = cantidad * precio;
+            // System.out.println("Subtotal calculado: " + subtotal);
             txtSubtotal.setText(String.format(java.util.Locale.US, "%.2f", subtotal));
         } catch (NumberFormatException e) {
+            // System.out.println("Error de formato en cantidad o precio");
             txtSubtotal.setText("");
         }
     }
 
     @FXML
-    void guardarDetalleVenta() {
+    void guardarDetalleVenta(ActionEvent event) {
         try (Connection conn = ConexionOracleMaster.getConnection()){
             String sql = "UPDATE DETALLE_VENTA SET PRODUCTO_ID = ?, CANTIDAD = ?, PRECIO_UNITARIO = ?, SUB_TOTAL = ? " +
                     "WHERE VENTA_ID = ? AND DETALLE_ID = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, Integer.parseInt(txtId2.getText()));
-            ps.setInt(2, Integer.parseInt(txtCantidad.getText()));
+            ps.setDouble(2, Double.parseDouble(txtCantidad.getText()));
             ps.setDouble(3, Double.parseDouble(txtPrecioUnitario.getText()));
             ps.setDouble(4, Double.parseDouble(txtSubtotal.getText()));
             ps.setInt(5, Integer.parseInt(txtId.getText()));   // VENTA_ID
@@ -82,7 +89,8 @@ public class ModificadorDetalleVentaController {
             int filas = ps.executeUpdate();
             if(filas > 0){
                 mostrarAlerta("Detalle de venta actualizado correctamente", Alert.AlertType.INFORMATION);
-                regresar();
+                Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+                Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionDetalleVenta.fxml", "Gestión de Detalles de Venta");
             } else {
                 mostrarAlerta("No se pudo actualizar el detalle de venta", Alert.AlertType.ERROR);
             }
@@ -94,14 +102,32 @@ public class ModificadorDetalleVentaController {
     }
 
     @FXML
-    void regresar() {
-        ((Stage) btnGuardar1.getScene().getWindow()).close();
+    void regresar(ActionEvent event) {
+        Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+        Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionDetalleVenta.fxml", "Gestión de Detalles de Venta");
     }
 
     private void mostrarAlerta(String mensaje, Alert.AlertType type) {
         Alert alert = new Alert(type);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+
+    public void recibirDatos(String string, String string2, String string3, String string4, String string5, String string6) {
+        txtId.setText(string);
+        txtId1.setText(string2);
+        txtId2.setText(string3);
+        txtCantidad.setText(string4);
+        txtPrecioUnitario.setText(string5);
+        txtSubtotal.setText(string6);
+
+        // Deshabilitar campos de ID para evitar modificaciones
+        txtId.setDisable(true);
+        txtId1.setDisable(true);
+        txtId2.setDisable(true);
+        txtSubtotal.setEditable(false);
+
+        calcularSubtotal();
     }
 
 }

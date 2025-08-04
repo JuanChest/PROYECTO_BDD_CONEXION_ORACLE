@@ -7,14 +7,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Util.TablaDistribuida;
+import Util.ConexionFactory;
+import Util.ContextoConexion;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class AdministrarCliente {
+
     public static void insertar(int id, String nombre, String apellido, String email, String telefono) {
-        try {
-            Connection conn = ConexionOracleMaster.getConnection();
-            String sql = "INSERT INTO CLIENTE (CLIENTE_ID, NOMBRE, APELLIDO, EMAIL, TELEFONO) VALUES (?, ?, ?, ?, ?)";
+        if (ContextoConexion.getTipoConexion() != ContextoConexion.TipoConexion.MASTER) {
+            System.out.println("No se permite insertar desde una conexión remota.");
+            return;
+        }
+
+        try (Connection conn = ConexionFactory.obtenerConexion()) {
+            String tabla = TablaDistribuida.obtenerNombre("CLIENTE");
+            String sql = "INSERT INTO " + tabla + " (CLIENTE_ID, NOMBRE, APELLIDO, EMAIL, TELEFONO) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 stmt.setString(2, nombre);
@@ -29,9 +38,14 @@ public class AdministrarCliente {
     }
 
     public static void actualizar(int id, String nombre, String apellido, String email, String telefono) {
-        try {
-            Connection conn = ConexionOracleMaster.getConnection();
-            String sql = "UPDATE CLIENTE SET NOMBRE=?, APELLIDO=?, EMAIL=?, TELEFONO=? WHERE CLIENTE_ID=?";
+        if (ContextoConexion.getTipoConexion() != ContextoConexion.TipoConexion.MASTER) {
+            System.out.println("No se permite actualizar desde una conexión remota.");
+            return;
+        }
+
+        try (Connection conn = ConexionFactory.obtenerConexion()) {
+            String tabla = TablaDistribuida.obtenerNombre("CLIENTE");
+            String sql = "UPDATE " + tabla + " SET NOMBRE=?, APELLIDO=?, EMAIL=?, TELEFONO=? WHERE CLIENTE_ID=?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, nombre);
                 stmt.setString(2, apellido);
@@ -46,45 +60,47 @@ public class AdministrarCliente {
     }
 
     public static void eliminar(int clienteId) {
-        try {
-            Connection conn = ConexionOracleMaster.getConnection();
+        if (ContextoConexion.getTipoConexion() != ContextoConexion.TipoConexion.MASTER) {
+            System.out.println("No se permite eliminar desde una conexión remota.");
+            return;
+        }
+
+        try (Connection conn = ConexionFactory.obtenerConexion()) {
             conn.setAutoCommit(false); // Transacción manual
 
-            // 1. Obtener VENTA_IDs del cliente
-            String obtenerVentas = "SELECT VENTA_ID FROM VENTAS WHERE CLIENTE_ID = ?";
-            PreparedStatement psVentas = conn.prepareStatement(obtenerVentas);
-            psVentas.setInt(1, clienteId);
-            ResultSet rsVentas = psVentas.executeQuery();
+            String tablaVentas = TablaDistribuida.obtenerNombre("VENTAS");
+            String sqlObtenerVentas = "SELECT VENTA_ID FROM " + tablaVentas + " WHERE CLIENTE_ID = ?";
+            try (PreparedStatement psVentas = conn.prepareStatement(sqlObtenerVentas)) {
+                psVentas.setInt(1, clienteId);
+                ResultSet rsVentas = psVentas.executeQuery();
 
-            List<Integer> ventasCliente = new ArrayList<>();
-            while (rsVentas.next()) {
-                ventasCliente.add(rsVentas.getInt("VENTA_ID"));
+                List<Integer> ventasCliente = new ArrayList<>();
+                while (rsVentas.next()) {
+                    ventasCliente.add(rsVentas.getInt("VENTA_ID"));
+                }
+                rsVentas.close();
+
+                String sqlEliminarDetalles = "DELETE FROM DETALLE_VENTA WHERE VENTA_ID = ?";
+                try (PreparedStatement psDetalles = conn.prepareStatement(sqlEliminarDetalles)) {
+                    for (int ventaId : ventasCliente) {
+                        psDetalles.setInt(1, ventaId);
+                        psDetalles.executeUpdate();
+                    }
+                }
+
+                String sqlEliminarVentas = "DELETE FROM " + tablaVentas + " WHERE CLIENTE_ID = ?";
+                try (PreparedStatement psElimVentas = conn.prepareStatement(sqlEliminarVentas)) {
+                    psElimVentas.setInt(1, clienteId);
+                    psElimVentas.executeUpdate();
+                }
+
+                String tablaCliente = TablaDistribuida.obtenerNombre("CLIENTE");
+                String sqlEliminarCliente = "DELETE FROM " + tablaCliente + " WHERE CLIENTE_ID = ?";
+                try (PreparedStatement psCliente = conn.prepareStatement(sqlEliminarCliente)) {
+                    psCliente.setInt(1, clienteId);
+                    psCliente.executeUpdate();
+                }
             }
-            rsVentas.close();
-            psVentas.close();
-
-            // 2. Eliminar DETALLE_VENTA por cada venta
-            String eliminarDetalles = "DELETE FROM DETALLE_VENTA WHERE VENTA_ID = ?";
-            PreparedStatement psDetalles = conn.prepareStatement(eliminarDetalles);
-            for (int ventaId : ventasCliente) {
-                psDetalles.setInt(1, ventaId);
-                psDetalles.executeUpdate();
-            }
-            psDetalles.close();
-
-            // 3. Eliminar VENTAS del cliente
-            String eliminarVentas = "DELETE FROM VENTAS WHERE CLIENTE_ID = ?";
-            PreparedStatement psElimVentas = conn.prepareStatement(eliminarVentas);
-            psElimVentas.setInt(1, clienteId);
-            psElimVentas.executeUpdate();
-            psElimVentas.close();
-
-            // 4. Finalmente, eliminar CLIENTE
-            String eliminarCliente = "DELETE FROM CLIENTE WHERE CLIENTE_ID = ?";
-            PreparedStatement psCliente = conn.prepareStatement(eliminarCliente);
-            psCliente.setInt(1, clienteId);
-            psCliente.executeUpdate();
-            psCliente.close();
 
             conn.commit();
             System.out.println("Cliente eliminado correctamente.");
@@ -94,12 +110,12 @@ public class AdministrarCliente {
         }
     }
 
-
     public static ObservableList<ObservableList<String>> obtenerTodos() {
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
 
-        try (Connection conn = ConexionOracleMaster.getConnection()) {
-            String sql = "SELECT CLIENTE_ID, NOMBRE, APELLIDO, EMAIL, TELEFONO FROM CLIENTE";
+        try (Connection conn = ConexionFactory.obtenerConexion()) {
+            String tabla = TablaDistribuida.obtenerNombre("CLIENTE");
+            String sql = "SELECT CLIENTE_ID, NOMBRE, APELLIDO, EMAIL, TELEFONO FROM " + tabla;
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
 
@@ -121,4 +137,3 @@ public class AdministrarCliente {
         return datos;
     }
 }
-
