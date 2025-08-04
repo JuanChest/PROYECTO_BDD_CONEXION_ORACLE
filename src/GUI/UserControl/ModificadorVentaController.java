@@ -46,14 +46,14 @@ public class ModificadorVentaController {
         txtId.setEditable(false);
         txtId1.setText(idTienda);
         txtId2.setText(idCliente);
-        //txtFecha.setText(fecha);
+        txtFecha.setText(fecha);
         // Si el string viene como "2022-03-02 00:00:00", cortamos solo la parte de la fecha
-        /*
+
         if (fecha.contains(" ")) {
             txtFecha.setText(fecha.split(" ")[0]); // Queda solo "2022-03-02"
         } else {
             txtFecha.setText(fecha); // Por si ya viene solo con la fecha
-        }*/
+        }
 
         txtTotal.setText(total);
     }
