@@ -11,7 +11,7 @@
         <TextField fx:id="txtId" promptText="Id_Venta" />
       <TextField fx:id="txtId1" promptText="Id_Tienda" />
       <TextField fx:id="txtId2" promptText="Id_Cliente" />
-        <TextField fx:id="txtFecha" promptText="Fecha" />
+      <DatePicker fx:id="fecha" onAction="#getDate" promptText="Seleccione la fecha" />
       <TextField fx:id="txtTotal" promptText="Total" />
 
         <Button fx:id="btnGuardar" onAction="#guardarVenta" style="-fx-background-color: #20dad8; -fx-text-fill: white;" text="Guardar" />

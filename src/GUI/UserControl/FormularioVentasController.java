@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -15,6 +16,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class FormularioVentasController {
 
@@ -38,6 +41,9 @@ public class FormularioVentasController {
 
     @FXML
     private TextField txtVentaID;
+
+    @FXML
+    private DatePicker fecha;
 
     @FXML
     public void initialize() {
@@ -71,7 +77,8 @@ public class FormularioVentasController {
             int idVenta = Integer.parseInt(txtVentaID.getText());
             int idTienda = Integer.parseInt(txtTiendaID.getText());
             int idCliente = Integer.parseInt(txtClienteID.getText());
-            Date fecha = Date.valueOf(txtFecha.getText());
+            //Date fecha = Date.valueOf(txtFecha.getText());
+            Date fecha = Date.valueOf(getDate());
             double total = Double.parseDouble(txtTotal.getText());
 
             AdministrarVentas.insertar(idVenta, idTienda, idCliente, fecha, total);
@@ -94,6 +101,13 @@ public class FormularioVentasController {
         Alert alert = new Alert(type);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+    @FXML
+    public String getDate(){
+        LocalDate fechaSeleccionada = fecha.getValue();
+        String fechaFormateada = fechaSeleccionada.format(DateTimeFormatter.ofPattern("YYYY-MM-dd"));
+        txtFecha.setText(fechaFormateada);
+        return fechaFormateada;
     }
 
 }

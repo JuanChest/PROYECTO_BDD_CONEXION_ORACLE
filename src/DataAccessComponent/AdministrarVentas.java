@@ -59,7 +59,7 @@ public class AdministrarVentas {
 
     public static ObservableList<ObservableList<String>> obtenerTodos () {
         String tabla = TablaDistribuida.obtenerNombre("VENTAS");
-        String sql = "SELECT * FROM " + tabla;
+        String sql = "SELECT * FROM " + tabla + " ORDER BY VENTA_ID";
         ObservableList<ObservableList<String>> listaVentas = FXCollections.observableArrayList();
         try (Connection conn = ConexionFactory.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
