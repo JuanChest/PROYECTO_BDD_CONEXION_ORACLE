@@ -1,5 +1,6 @@
 package GUI.UserControl;
 
+import DataAccessComponent.AdministrarInventario;
 import DataAccessComponent.ConexionOracleMaster;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -44,22 +45,17 @@ public class ModificadorInventarioController {
 
     @FXML
     void guardarInventario(ActionEvent event) {
-        try (Connection conn = ConexionOracleMaster.getConnection()) {
-            String sql = "UPDATE INVENTARIO SET ID_TIENDA = ?, CANTIDAD = ? WHERE INVENTARIO_ID = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
+        try {
+            int idTienda = Integer.parseInt(txtIdTienda.getText());
+            int idProducto = Integer.parseInt(txtIdProducto.getText());
+            int cantidad = Integer.parseInt(txtCantidad.getText());
+            int idInventario = Integer.parseInt(txtId.getText());
 
-            ps.setInt(1, Integer.parseInt(txtIdTienda.getText()));
-            ps.setInt(2, Integer.parseInt(txtCantidad.getText()));
-            ps.setInt(3, Integer.parseInt(txtId.getText()));
+            AdministrarInventario.actualizar(idInventario, idTienda, idProducto, cantidad);
+            mostrarAlerta("Inventario actualizado correctamente", Alert.AlertType.INFORMATION);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionInventario.fxml", "Gestión del Inventario");
 
-            int filas = ps.executeUpdate();
-            if (filas > 0) {
-                mostrarAlerta("Inventario actualizado correctamente", Alert.AlertType.INFORMATION);
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                Ventana.cambiarEscena(stage, "/GUI/Interfaz/GestionInventario.fxml", "Gestión del Inventario");
-            } else {
-                mostrarAlerta("No se pudo actualizar el inventario", Alert.AlertType.ERROR);
-            }
         } catch (Exception e) {
             e.printStackTrace();
             mostrarAlerta("Error al actualizar inventario: " + e.getMessage(), Alert.AlertType.ERROR);

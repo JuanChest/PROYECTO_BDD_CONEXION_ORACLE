@@ -13,7 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class AdministrarVentas {
-    public static void insertar(int ventaId, int tiendaId, int clienteId, String fecha, double total) {
+    public static void insertar(int ventaId, int tiendaId, int clienteId, Date fecha, double total) {
         String tabla = TablaDistribuida.obtenerNombre("VENTAS");
         String sql = "INSERT INTO " + tabla + " (VENTA_ID, ID_TIENDA, CLIENTE_ID, FECHA, TOTAL) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = ConexionFactory.obtenerConexion();
@@ -21,7 +21,7 @@ public class AdministrarVentas {
             stmt.setInt(1, ventaId);
             stmt.setInt(2, tiendaId);
             stmt.setInt(3, clienteId);
-            stmt.setString(4, fecha);
+            stmt.setDate(4, fecha);
             stmt.setDouble(5, total);
             stmt.executeUpdate();
         } catch (SQLException e) {

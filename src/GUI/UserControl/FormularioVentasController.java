@@ -1,5 +1,6 @@
 package GUI.UserControl;
 
+import DataAccessComponent.AdministrarVentas;
 import DataAccessComponent.ConexionOracleMaster;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -66,16 +67,14 @@ public class FormularioVentasController {
 
     @FXML
     void guardarVentas(ActionEvent event) {
-        try(Connection conn = ConexionOracleMaster.getConnection()){
-            String sql = "INSERT INTO VENTAS(VENTA_ID, ID_TIENDA, CLIENTE_ID, FECHA, TOTAL) VALUES(?,?,?,?,?)";
-            PreparedStatement ps = conn.prepareStatement(sql);
+        try {
+            int idVenta = Integer.parseInt(txtVentaID.getText());
+            int idTienda = Integer.parseInt(txtTiendaID.getText());
+            int idCliente = Integer.parseInt(txtClienteID.getText());
+            Date fecha = Date.valueOf(txtFecha.getText());
+            double total = Double.parseDouble(txtTotal.getText());
 
-            ps.setInt(1, Integer.parseInt(txtVentaID.getText()));
-            ps.setInt(2, Integer.parseInt(txtTiendaID.getText()));
-            ps.setInt(3, Integer.parseInt(txtClienteID.getText()));
-            ps.setDate(4, Date.valueOf(txtFecha.getText()));
-            ps.setDouble(5, Double.parseDouble(txtTotal.getText()));
-            ps.executeUpdate();
+            AdministrarVentas.insertar(idVenta, idTienda, idCliente, fecha, total);
 
             mostrarAlerta("Venta registrada correctamente", Alert.AlertType.INFORMATION);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

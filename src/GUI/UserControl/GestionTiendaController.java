@@ -59,9 +59,9 @@ public class GestionTiendaController {
 
         if (Util.ContextoConexion.getTipoConexion() == Util.ContextoConexion.TipoConexion.REMOTO) {
             System.out.println("Modo REMOTO: Ocultando botones");
-            btnAgregar.setVisible(false);
-            btnEditar.setVisible(false);
-            btnEliminar.setVisible(false);
+            //btnAgregar.setVisible(false);
+            //btnEditar.setVisible(false);
+            //btnEliminar.setVisible(false);
         } else {
             System.out.println("Modo MASTER: Mostrando botones");
             btnAgregar.setVisible(true);
