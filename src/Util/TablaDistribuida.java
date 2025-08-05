@@ -40,20 +40,20 @@ public class TablaDistribuida {
     }
 
     public static String obtenerNombre(String base, String provincia) {
-        if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.MASTER) {
-            return base;
-        } else {
-            // Para replicadas
-            if (nombresFragmentados.containsKey("REPLICADAS") && nombresFragmentados.get("REPLICADAS").containsKey(base)) {
-                return nombresFragmentados.get("REPLICADAS").get(base);
-            }
-            // Para tablas fragmentadas
-            if (nombresFragmentados.containsKey(base)) {
-                Map<String, String> porProvincia = nombresFragmentados.get(base);
-                return porProvincia.getOrDefault(provincia, base);
-            }
-            // Default
-            return base;
+    // Si quieres que tanto MASTER como remotos usen los nombres replicados/fragmentados:
+        // Primero verifica si la tabla es replicada:
+        if (nombresFragmentados.containsKey("REPLICADAS") && nombresFragmentados.get("REPLICADAS").containsKey(base)) {
+            return nombresFragmentados.get("REPLICADAS").get(base);
         }
+        
+        // Luego, si es tabla fragmentada, devuelve el fragmento por provincia:
+        if (nombresFragmentados.containsKey(base)) {
+            Map<String, String> porProvincia = nombresFragmentados.get(base);
+            return porProvincia.getOrDefault(provincia, base);
+        }
+        
+        // En caso no aplique, devuelve base
+        return base;
     }
+
 }

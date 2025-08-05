@@ -112,7 +112,7 @@ public class GestionDetalleVentaController {
     @FXML
     public void initialize() {
         String provincia = ContextoModulo.getProvinciaActual();
-        System.out.println("Provincia actual: " + provincia);
+        System.out.println("Provincia actual en initialize(): " + provincia);
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
             menuClientesPichincha.setText("ClientesGuayas");
             menuClientesCotopaxi.setText("ClientesManabi");

@@ -74,29 +74,32 @@ public class AdministrarDetalleVenta {
     }
     
     public static ObservableList<ObservableList<String>> obtenerTodos(String provincia) {
-    ObservableList<ObservableList<String>> resultado = FXCollections.observableArrayList();
+        ObservableList<ObservableList<String>> resultado = FXCollections.observableArrayList();
 
-    try (Connection conn = ConexionFactory.obtenerConexion()) {
-        String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA", provincia);
-        String sql = "SELECT * FROM " + tabla;
-        try (PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                ObservableList<String> fila = FXCollections.observableArrayList();
-                fila.add(String.valueOf(rs.getInt("VENTA_ID")));
-                fila.add(String.valueOf(rs.getInt("DETALLE_ID")));
-                fila.add(String.valueOf(rs.getInt("PRODUCTO_ID")));
-                fila.add(String.valueOf(rs.getDouble("CANTIDAD")));
-                fila.add(String.valueOf(rs.getDouble("PRECIO_UNITARIO")));
-                fila.add(String.valueOf(rs.getDouble("SUB_TOTAL")));
-                resultado.add(fila);
+        try (Connection conn = ConexionFactory.obtenerConexion()) {
+            String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA", provincia);
+            System.out.println("Tabla calculada dinámicamente: " + tabla);
+
+            String sql = "SELECT * FROM " + tabla;
+            System.out.println("Ejecutando consulta: " + sql);
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    ObservableList<String> fila = FXCollections.observableArrayList();
+                    fila.add(String.valueOf(rs.getInt("VENTA_ID")));
+                    fila.add(String.valueOf(rs.getInt("DETALLE_ID")));
+                    fila.add(String.valueOf(rs.getInt("PRODUCTO_ID")));
+                    fila.add(String.valueOf(rs.getDouble("CANTIDAD")));
+                    fila.add(String.valueOf(rs.getDouble("PRECIO_UNITARIO")));
+                    fila.add(String.valueOf(rs.getDouble("SUB_TOTAL")));
+                    resultado.add(fila);
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return resultado;
     }
-    return resultado;
-}
 
 
     
