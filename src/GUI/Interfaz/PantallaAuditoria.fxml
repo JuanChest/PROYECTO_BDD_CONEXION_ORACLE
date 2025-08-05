@@ -21,38 +21,38 @@
                 <menus>
                     <Menu text="Clientes">
                         <items>
-                            <MenuItem onAction="#irClientesPichincha" text="Clientes_Pichincha" />
-                            <MenuItem onAction="#irClientesCotopaxi" text="Clientes_Cotopaxi" />
-                            <MenuItem onAction="#irClientesTungurahua" text="Clientes_Tungurahua" />
+                            <MenuItem fx:id="menuClientesPichincha" onAction="#irClientesPichincha" text="Clientes_Pichincha" />
+                            <MenuItem fx:id="menuClientesCotopaxi" onAction="#irClientesCotopaxi" text="Clientes_Cotopaxi" />
+                            <MenuItem fx:id="menuClientesTungurahua" onAction="#irClientesTungurahua" text="Clientes_Tungurahua" />
                             <MenuItem onAction="#irClientesGlobal" text="Clientes_Global" />
                         </items>
                     </Menu>
                     <Menu text="Tiendas">
                         <items>
-                            <MenuItem onAction="#irTiendasPichincha" text="Tiendas_Pichincha" />
-                            <MenuItem onAction="#irTiendasCotopaxi" text="Tiendas_Cotopaxi" />
-                            <MenuItem onAction="#irTiendasTungurahua" text="Tiendas_Tungurahua" />
+                            <MenuItem fx:id="menuTiendasPichincha" onAction="#irTiendasPichincha" text="Tiendas_Pichincha" />
+                            <MenuItem fx:id="menuTiendasCotopaxi" onAction="#irTiendasCotopaxi" text="Tiendas_Cotopaxi" />
+                            <MenuItem fx:id="menuTiendasTungurahua" onAction="#irTiendasTungurahua" text="Tiendas_Tungurahua" />
                         </items>
                     </Menu>
                     <Menu text="Ventas">
                         <items>
-                            <MenuItem onAction="#irVentasPichincha" text="Ventas_Pichincha" />
-                            <MenuItem onAction="#irVentasCotopaxi" text="Ventas_Cotopaxi" />
-                            <MenuItem onAction="#irVentasTungurahua" text="Ventas_Tungurahua" />
+                            <MenuItem fx:id="menuVentasPichincha" onAction="#irVentasPichincha" text="Ventas_Pichincha" />
+                            <MenuItem fx:id="menuVentasCotopaxi" onAction="#irVentasCotopaxi" text="Ventas_Cotopaxi" />
+                            <MenuItem fx:id="menuVentasTungurahua" onAction="#irVentasTungurahua" text="Ventas_Tungurahua" />
                         </items>
                     </Menu>
                     <Menu text="Inventario">
                         <items>
-                            <MenuItem onAction="#irInventarioPichincha" text="Inventario_Pichincha" />
-                            <MenuItem onAction="#irInventarioCotopaxi" text="Inventario_Cotopaxi" />
-                            <MenuItem onAction="#irInventarioTungurahua" text="Inventario_Tungurahua" />
+                            <MenuItem fx:id="menuInventarioPichincha" onAction="#irInventarioPichincha" text="Inventario_Pichincha" />
+                            <MenuItem fx:id="menuInventarioCotopaxi" onAction="#irInventarioCotopaxi" text="Inventario_Cotopaxi" />
+                            <MenuItem fx:id="menuInventarioTungurahua" onAction="#irInventarioTungurahua" text="Inventario_Tungurahua" />
                         </items>
                     </Menu>
                     <Menu text="Detalle_Venta">
                         <items>
-                            <MenuItem onAction="#irDetalleVentaPichincha" text="DetalleVenta_Pichincha" />
-                            <MenuItem onAction="#irDetalleVentaCotopaxi" text="DetalleVenta_Cotopaxi" />
-                            <MenuItem onAction="#irDetalleVentaTungurahua" text="DetalleVenta_Tungurahua" />
+                            <MenuItem fx:id="menuDetalleVentaPichincha" onAction="#irDetalleVentaPichincha" text="DetalleVenta_Pichincha" />
+                            <MenuItem fx:id="menuDetalleVentaCotopaxi" onAction="#irDetalleVentaCotopaxi" text="DetalleVenta_Cotopaxi" />
+                            <MenuItem fx:id="menuDetalleVentaTungurahua" onAction="#irDetalleVentaTungurahua" text="DetalleVenta_Tungurahua" />
                         </items>
                     </Menu>
                     <Menu text="Provincia">
@@ -70,9 +70,9 @@
                             <MenuItem onAction="#irProveedores" text="Proveedores" />
                         </items>
                     </Menu>
-                    <Menu text="Auditoria">
+                    <Menu text="Auditoría">
                         <items>
-                            <MenuItem onAction="#irAuditoria" text="Auditoria" />
+                            <MenuItem onAction="#irAuditoria" text="Ver Auditoría" />
                         </items>
                     </Menu>
                 </menus>

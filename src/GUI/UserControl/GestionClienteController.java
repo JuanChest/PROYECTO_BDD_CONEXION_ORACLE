@@ -8,7 +8,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
-public class GestionProveedorController {
+public class GestionClienteController {
+
+    @FXML
+    private TextField apellidoField;
 
     @FXML
     private Button btnActualizar;
@@ -20,13 +23,28 @@ public class GestionProveedorController {
     private Button btnGuardar;
 
     @FXML
+    private TextField cedulaField;
+
+    @FXML
+    private TextField clienteIdField;
+
+    @FXML
+    private TableColumn<?, ?> colApellido;
+
+    @FXML
+    private TableColumn<?, ?> colCedula;
+
+    @FXML
     private TableColumn<?, ?> colEmail;
+
+    @FXML
+    private TableColumn<?, ?> colIdCliente;
 
     @FXML
     private TableColumn<?, ?> colNombre;
 
     @FXML
-    private TableColumn<?, ?> colProveedorId;
+    private TableColumn<?, ?> colProvinciaId;
 
     @FXML
     private TableColumn<?, ?> colTelefono;
@@ -42,6 +60,15 @@ public class GestionProveedorController {
 
     @FXML
     private MenuItem menuClientesTungurahua;
+
+    @FXML
+    private MenuItem menuDetalleVentaCotopaxi;
+
+    @FXML
+    private MenuItem menuDetalleVentaPichincha;
+
+    @FXML
+    private MenuItem menuDetalleVentaTungurahua;
 
     @FXML
     private MenuItem menuInventarioCotopaxi;
@@ -74,26 +101,26 @@ public class GestionProveedorController {
     private TextField nombreField;
 
     @FXML
-    private TextField proveedorIdField;
+    private TextField provinciaIdField;
 
     @FXML
-    private TableView<?> tablaProveedor;
+    private TableView<?> tablaClientes;
 
     @FXML
     private TextField telefonoField;
 
     @FXML
-    void editarProveedor(ActionEvent event) {
+    void editarCliente(ActionEvent event) {
 
     }
 
     @FXML
-    void eliminarProveedor(ActionEvent event) {
+    void eliminarCliente(ActionEvent event) {
 
     }
 
     @FXML
-    void guardarProveedor(ActionEvent event) {
+    void guardarCliente(ActionEvent event) {
 
     }
 
@@ -201,7 +228,9 @@ public class GestionProveedorController {
 
 // package GUI.UserControl;
 
-// import DataAccessComponent.AdministrarProveedor;
+// import java.io.IOException;
+
+// import DataAccessComponent.AdministrarCliente;
 // import javafx.beans.property.SimpleStringProperty;
 // import javafx.collections.ObservableList;
 // import javafx.event.ActionEvent;
@@ -215,7 +244,7 @@ public class GestionProveedorController {
 // import javafx.scene.control.TableView;
 // import javafx.stage.Stage;
 
-// public class GestionProveedorController {
+// public class GestionClientesController {
 
 //     @FXML
 //     private Button btnAgregar;
@@ -230,10 +259,13 @@ public class GestionProveedorController {
 //     private Button btnEliminar1;
 
 //     @FXML
+//     private TableColumn<ObservableList<String>, String> colApellido;
+
+//     @FXML
 //     private TableColumn<ObservableList<String>, String> colCorreo;
 
 //     @FXML
-//     private TableColumn<ObservableList<String>, String> colIDProveedor;
+//     private TableColumn<ObservableList<String>, String> colIDCliente;
 
 //     @FXML
 //     private TableColumn<ObservableList<String>, String> colNombre;
@@ -246,12 +278,13 @@ public class GestionProveedorController {
 
 //     @FXML
 //     public void initialize() {
-//         colIDProveedor.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(0)));
+//         colIDCliente.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(0)));
 //         colNombre.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(1)));
-//         colCorreo.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(2)));
-//         colTelefono.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(3)));
+//         colApellido.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(2)));
+//         colCorreo.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(3)));
+//         colTelefono.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(4)));
 
-//         tablaClientes.setItems(AdministrarProveedor.obtenerTodos());
+//         tablaClientes.setItems(AdministrarCliente.obtenerTodos());
 //         ajustarInterfazPorConexion();
 //     }
 
@@ -271,52 +304,68 @@ public class GestionProveedorController {
 //         }
 //     }
 
+
+
 //     @FXML
-//     void agregarNuevoProveedor(ActionEvent event) {
+//     void agregarNuevoCliente(ActionEvent event) {
 //         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-//         Ventana.cambiarEscena(stage, "/GUI/Interfaz/FormularioProveedor.fxml", "Agregar Nuevo Proveedor");
+//         Ventana.cambiarEscena(stage, "/GUI/Interfaz/FormularioClientes.fxml", "Agregar Nuevo Cliente");
 //     }
 
 //     @FXML
-//     void editarProveedor(ActionEvent event) {
+//     void editarCliente(ActionEvent event) {
 //         ObservableList<String> seleccion = tablaClientes.getSelectionModel().getSelectedItem();
 
 //         if (seleccion == null) {
-//             System.out.println("Por favor, seleccione un proveedor para editar.");
+//             System.out.println("Por favor, seleccione un cliente para editar.");
 //             return;
 //         }
 
 //         try {
-//             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Interfaz/ModificadorProveedor.fxml"));
+//             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Interfaz/ModificadorCliente.fxml"));
 //             Parent root = loader.load();
 
-//             ModificadorProveedorController controlador = loader.getController();
+//             // Obtener controlador del modificador
+//             ModificadorClienteController controladorEditar = loader.getController();
 
-//             controlador.recibirDatos(seleccion.get(0), seleccion.get(1), seleccion.get(2), seleccion.get(3));
-//             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+//             // Enviar datos a la ventana de modificación
+//             controladorEditar.recibirDatos(
+//                     seleccion.get(0), // id
+//                     seleccion.get(1), // nombre
+//                     seleccion.get(2), // apellido
+//                     seleccion.get(3), // correo
+//                     seleccion.get(4)  // teléfono
+//             );
+
+//             // Cambiar de escena
+//             Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
 //             stage.setScene(new Scene(root));
-//             stage.setTitle("Editar Proveedor");
+//             stage.setTitle("Modificación de Cliente");
 //             stage.show();
-//         } catch (Exception e) {
+
+//         } catch (IOException e) {
 //             e.printStackTrace();
 //         }
 //     }
 
+
 //     @FXML
-//     void eliminarProveedor(ActionEvent event) {
+//     void eliminarCliente(ActionEvent event) {
 //         ObservableList<String> seleccion = tablaClientes.getSelectionModel().getSelectedItem();
 
 //         if (seleccion == null) {
-//             System.out.println("Por favor, seleccione un proveedor para eliminar.");
+//             System.out.println("Por favor, seleccione un cliente para eliminar.");
 //             return;
 //         }
 
-//         int ProveedorId = Integer.parseInt(seleccion.get(0));
-//         AdministrarProveedor.eliminar(ProveedorId);
+//         int clienteId = Integer.parseInt(seleccion.get(0));
+//         AdministrarCliente.eliminar(clienteId);
 
 //         // Refrescar la tabla asignando directamente los datos
-//         tablaClientes.setItems(AdministrarProveedor.obtenerTodos());
+//         tablaClientes.setItems(AdministrarCliente.obtenerTodos());
 //     }
+
+
 
 //     @FXML
 //     void regresar(ActionEvent event) {
@@ -325,4 +374,3 @@ public class GestionProveedorController {
 //     }
 
 // }
-

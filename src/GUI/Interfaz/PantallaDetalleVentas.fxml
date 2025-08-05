@@ -74,7 +74,11 @@
                             <MenuItem onAction="#irProveedores" text="Proveedores" />
                         </items>
                     </Menu>
-                    <Menu mnemonicParsing="false" text="Auditoria" />
+                    <Menu text="Auditoría">
+                        <items>
+                            <MenuItem onAction="#irAuditoria" text="Ver Auditoría" />
+                        </items>
+                    </Menu>
                 </menus>
             </MenuBar>
         </top>

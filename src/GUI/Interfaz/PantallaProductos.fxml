@@ -53,9 +53,9 @@
                     </Menu>
                     <Menu text="Detalle_Venta">
                         <items>
-                            <MenuItem onAction="#irDetalleVentaPichincha" text="DetalleVenta_Pichincha" />
-                            <MenuItem onAction="#irDetalleVentaCotopaxi" text="DetalleVenta_Cotopaxi" />
-                            <MenuItem onAction="#irDetalleVentaTungurahua" text="DetalleVenta_Tungurahua" />
+                            <MenuItem fx:id="menuDetalleVentaPichincha" onAction="#irDetalleVentaPichincha" text="DetalleVenta_Pichincha" />
+                            <MenuItem fx:id="menuDetalleVentaCotopaxi" onAction="#irDetalleVentaCotopaxi" text="DetalleVenta_Cotopaxi" />
+                            <MenuItem fx:id="menuDetalleVentaTungurahua" onAction="#irDetalleVentaTungurahua" text="DetalleVenta_Tungurahua" />
                         </items>
                     </Menu>
                     <Menu text="Provincia">
@@ -73,7 +73,11 @@
                             <MenuItem onAction="#irProveedores" text="Proveedores" />
                         </items>
                     </Menu>
-                    <Menu mnemonicParsing="false" text="Auditoria" />
+                    <Menu text="Auditoría">
+                        <items>
+                            <MenuItem onAction="#irAuditoria" text="Ver Auditoría" />
+                        </items>
+                    </Menu>
                 </menus>
             </MenuBar>
         </top>

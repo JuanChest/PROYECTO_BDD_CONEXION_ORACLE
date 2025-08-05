@@ -14,11 +14,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.UserControl.GestionInventarioController">
+<AnchorPane prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.UserControl.GestionTiendaController">
 
     <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
 
-        <!-- Menú superior (NO TOCAR) -->
+        <!-- Menú superior -->
         <top>
             <MenuBar BorderPane.alignment="TOP_LEFT">
                 <menus>
@@ -89,17 +89,18 @@
                     <Insets bottom="15.0" left="10.0" right="10.0" top="15.0" />
                 </padding>
 
-                <Label style="-fx-font-weight: bold;" text="Formulario de Inventario" textFill="WHITE" />
+                <Label style="-fx-font-weight: bold;" text="Formulario de Tienda" textFill="WHITE" />
 
-                <TextField fx:id="inventarioIdField" promptText="ID Inventario" />
                 <TextField fx:id="tiendaIdField" promptText="ID Tienda" />
-                <TextField fx:id="cantidadField" promptText="Cantidad" />
+                <TextField fx:id="provinciaIdField" promptText="ID Provincia" />
+                <TextField fx:id="nombreField" promptText="Nombre" />
+                <TextField fx:id="direccionField" promptText="Dirección" />
 
                 <HBox spacing="10.0">
                     <children>
-                        <Button fx:id="btnGuardar" onAction="#guardarInventario" style="-fx-background-color: #20dad8; -fx-text-fill: white;" text="Guardar" />
-                        <Button fx:id="btnActualizar" onAction="#editarInventario" style="-fx-background-color: #20dad8; -fx-text-fill: white;" text="Actualizar" />
-                        <Button fx:id="btnEliminar" onAction="#eliminarInventario" style="-fx-background-color: #D0021B; -fx-text-fill: white;" text="Eliminar" />
+                        <Button fx:id="btnGuardar" onAction="#guardarTienda" style="-fx-background-color: #20dad8; -fx-text-fill: white;" text="Guardar" />
+                        <Button fx:id="btnActualizar" onAction="#editarTienda" style="-fx-background-color: #20dad8; -fx-text-fill: white;" text="Actualizar" />
+                        <Button fx:id="btnEliminar" onAction="#eliminarTienda" style="-fx-background-color: #D0021B; -fx-text-fill: white;" text="Eliminar" />
                     </children>
                 </HBox>
             </VBox>
@@ -107,11 +108,12 @@
 
         <!-- Tabla -->
         <center>
-            <TableView fx:id="tablaInventario">
+            <TableView fx:id="tablaTienda">
                 <columns>
-                    <TableColumn fx:id="colInventarioId" text="ID Inventario" />
                     <TableColumn fx:id="colTiendaId" text="ID Tienda" />
-                    <TableColumn fx:id="colCantidad" text="Cantidad" />
+                    <TableColumn fx:id="colProvinciaId" text="ID Provincia" />
+                    <TableColumn fx:id="colNombre" text="Nombre" />
+                    <TableColumn fx:id="colDireccion" text="Dirección" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

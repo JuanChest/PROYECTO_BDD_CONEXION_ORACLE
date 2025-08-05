@@ -1,146 +1,317 @@
 package GUI.UserControl;
 
-import DataAccessComponent.AdministrarVentas;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.stage.Stage;
+import javafx.scene.control.TextField;
 
 public class GestionVentaController {
 
     @FXML
-    private Button btnAgregar;
-
-    @FXML
-    private Button btnEditar;
+    private Button btnActualizar;
 
     @FXML
     private Button btnEliminar;
 
     @FXML
-    private Button btnEliminar1;
+    private Button btnGuardar;
 
     @FXML
-    private TableColumn<ObservableList<String>, String> colFecha;
+    private TextField clienteIdField;
 
     @FXML
-    private TableColumn<ObservableList<String>, String> colIdCliente;
+    private TableColumn<?, ?> colFecha;
 
     @FXML
-    private TableColumn<ObservableList<String>, String> colIdTienda;
+    private TableColumn<?, ?> colIdCliente;
 
     @FXML
-    private TableColumn<ObservableList<String>, String> colIdVenta;
+    private TableColumn<?, ?> colIdTienda;
 
     @FXML
-    private TableColumn<ObservableList<String>, String> colTotal;
+    private TableColumn<?, ?> colIdVenta;
 
     @FXML
-    private TableView<ObservableList<String>> tablaVentas;
-
-    public static ObservableList<String> ventaSeleccionada;
+    private TableColumn<?, ?> colTotal;
 
     @FXML
-    public void initialize() {
-        colIdVenta.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(0)));
-        colIdTienda.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(1)));
-        colIdCliente.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(2))); 
-        colFecha.setCellValueFactory(data -> {
-            String fechaCompleta = data.getValue().get(3);
-            String fechaSolo = fechaCompleta.contains(" ") ? fechaCompleta.split(" ")[0] : fechaCompleta;
-            return new ReadOnlyObjectWrapper<>(fechaSolo);
-        });
+    private DatePicker fechaPicker;
 
-        colTotal.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(4)));
+    @FXML
+    private TableView<?> tablaVentas;
 
-        tablaVentas.setItems(AdministrarVentas.obtenerTodos());
-        ajustarInterfazPorConexion();
-    }
+    @FXML
+    private TextField tiendaIdField;
 
-    private void ajustarInterfazPorConexion() {
-        System.out.println("Tipo de conexión actual: " + Util.ContextoConexion.getTipoConexion());
+    @FXML
+    private TextField totalField;
 
-        if (Util.ContextoConexion.getTipoConexion() == Util.ContextoConexion.TipoConexion.REMOTO) {
-            System.out.println("Modo REMOTO: Ocultando botones");
-            //btnAgregar.setVisible(false);
-            //btnEditar.setVisible(false);
-            //btnEliminar.setVisible(false);
-        } else {
-            System.out.println("Modo MASTER: Mostrando botones");
-            btnAgregar.setVisible(true);
-            btnEditar.setVisible(true);
-            btnEliminar.setVisible(true);
-        }
+    @FXML
+    private TextField ventaIdField;
+
+    @FXML
+    void editarVenta(ActionEvent event) {
+
     }
 
     @FXML
-    void agregarNuevoVenta(ActionEvent event) throws Exception {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Ventana.cambiarEscena(stage,"/GUI/Interfaz/FormularioVentas.fxml", "Registrar Venta");
+    void eliminarVenta(ActionEvent event) {
+
     }
 
     @FXML
-    void editarVenta(ActionEvent event) throws Exception {
-        ObservableList<String> ventaSeleccionada = tablaVentas.getSelectionModel().getSelectedItem();
-        if (ventaSeleccionada == null) {
-            mostrarAlerta("Seleccione una venta para editar", Alert.AlertType.WARNING);
-            return;
-        }
+    void guardarVenta(ActionEvent event) {
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Interfaz/ModificadorVenta.fxml"));
-            Parent root = loader.load();
-
-            ModificadorVentaController controller = loader.getController();
-
-            controller.recibirDatos(ventaSeleccionada.get(0), ventaSeleccionada.get(1), 
-                                    ventaSeleccionada.get(2), ventaSeleccionada.get(3), 
-                                    ventaSeleccionada.get(4));
-            
-            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Modificar Venta");
-            stage.show();
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @FXML
-    void eliminarVenta() {
-        ObservableList<String> seleccionada = tablaVentas.getSelectionModel().getSelectedItem();
-        if (seleccionada == null) {
-            mostrarAlerta("Seleccione una venta para eliminar", Alert.AlertType.WARNING);
-            return;
-        }
+    void irAuditoria(ActionEvent event) {
 
-        int ventaId = Integer.parseInt(seleccionada.get(0));
-        AdministrarVentas.eliminar(ventaId);
-
-        mostrarAlerta("Venta eliminada correctamente", Alert.AlertType.INFORMATION);
-
-        tablaVentas.setItems(AdministrarVentas.obtenerTodos());
     }
 
     @FXML
-    void regresar(ActionEvent event) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Ventana.cambiarEscena(stage, "/GUI/Interfaz/MenuPrincipal.fxml", "Proyecto: Menu Principal");
+    void irClientesCotopaxi(ActionEvent event) {
+
     }
 
-    private void mostrarAlerta(String mensaje, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
+    @FXML
+    void irClientesGlobal(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irClientesPichincha(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irClientesTungurahua(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irDetalleVentaCotopaxi(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irDetalleVentaPichincha(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irDetalleVentaTungurahua(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irInventarioCotopaxi(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irInventarioPichincha(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irInventarioTungurahua(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irProductos(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irProveedores(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irProvincia(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irTiendasCotopaxi(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irTiendasPichincha(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irTiendasTungurahua(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irVentasCotopaxi(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irVentasPichincha(ActionEvent event) {
+
+    }
+
+    @FXML
+    void irVentasTungurahua(ActionEvent event) {
+
     }
 
 }
+
+// package GUI.UserControl;
+
+// import DataAccessComponent.AdministrarVentas;
+// import javafx.beans.property.ReadOnlyObjectWrapper;
+// import javafx.collections.ObservableList;
+// import javafx.event.ActionEvent;
+// import javafx.fxml.FXML;
+// import javafx.fxml.FXMLLoader;
+// import javafx.scene.Node;
+// import javafx.scene.Parent;
+// import javafx.scene.Scene;
+// import javafx.scene.control.Alert;
+// import javafx.scene.control.Button;
+// import javafx.scene.control.TableColumn;
+// import javafx.scene.control.TableView;
+// import javafx.stage.Stage;
+
+// public class GestionVentaController {
+
+//     @FXML
+//     private Button btnAgregar;
+
+//     @FXML
+//     private Button btnEditar;
+
+//     @FXML
+//     private Button btnEliminar;
+
+//     @FXML
+//     private Button btnEliminar1;
+
+//     @FXML
+//     private TableColumn<ObservableList<String>, String> colFecha;
+
+//     @FXML
+//     private TableColumn<ObservableList<String>, String> colIdCliente;
+
+//     @FXML
+//     private TableColumn<ObservableList<String>, String> colIdTienda;
+
+//     @FXML
+//     private TableColumn<ObservableList<String>, String> colIdVenta;
+
+//     @FXML
+//     private TableColumn<ObservableList<String>, String> colTotal;
+
+//     @FXML
+//     private TableView<ObservableList<String>> tablaVentas;
+
+//     public static ObservableList<String> ventaSeleccionada;
+
+//     @FXML
+//     public void initialize() {
+//         colIdVenta.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(0)));
+//         colIdTienda.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(1)));
+//         colIdCliente.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(2))); 
+//         colFecha.setCellValueFactory(data -> {
+//             String fechaCompleta = data.getValue().get(3);
+//             String fechaSolo = fechaCompleta.contains(" ") ? fechaCompleta.split(" ")[0] : fechaCompleta;
+//             return new ReadOnlyObjectWrapper<>(fechaSolo);
+//         });
+
+//         colTotal.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(4)));
+
+//         tablaVentas.setItems(AdministrarVentas.obtenerTodos());
+//         ajustarInterfazPorConexion();
+//     }
+
+//     private void ajustarInterfazPorConexion() {
+//         System.out.println("Tipo de conexión actual: " + Util.ContextoConexion.getTipoConexion());
+
+//         if (Util.ContextoConexion.getTipoConexion() == Util.ContextoConexion.TipoConexion.REMOTO) {
+//             System.out.println("Modo REMOTO: Ocultando botones");
+//             //btnAgregar.setVisible(false);
+//             //btnEditar.setVisible(false);
+//             //btnEliminar.setVisible(false);
+//         } else {
+//             System.out.println("Modo MASTER: Mostrando botones");
+//             btnAgregar.setVisible(true);
+//             btnEditar.setVisible(true);
+//             btnEliminar.setVisible(true);
+//         }
+//     }
+
+//     @FXML
+//     void agregarNuevoVenta(ActionEvent event) throws Exception {
+//         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+//         Ventana.cambiarEscena(stage,"/GUI/Interfaz/FormularioVentas.fxml", "Registrar Venta");
+//     }
+
+//     @FXML
+//     void editarVenta(ActionEvent event) throws Exception {
+//         ObservableList<String> ventaSeleccionada = tablaVentas.getSelectionModel().getSelectedItem();
+//         if (ventaSeleccionada == null) {
+//             mostrarAlerta("Seleccione una venta para editar", Alert.AlertType.WARNING);
+//             return;
+//         }
+
+//         try {
+//             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Interfaz/ModificadorVenta.fxml"));
+//             Parent root = loader.load();
+
+//             ModificadorVentaController controller = loader.getController();
+
+//             controller.recibirDatos(ventaSeleccionada.get(0), ventaSeleccionada.get(1), 
+//                                     ventaSeleccionada.get(2), ventaSeleccionada.get(3), 
+//                                     ventaSeleccionada.get(4));
+            
+//             Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+//             stage.setScene(new Scene(root));
+//             stage.setTitle("Modificar Venta");
+//             stage.show();
+//         }catch (Exception e) {
+//             e.printStackTrace();
+//         }
+//     }
+
+//     @FXML
+//     void eliminarVenta() {
+//         ObservableList<String> seleccionada = tablaVentas.getSelectionModel().getSelectedItem();
+//         if (seleccionada == null) {
+//             mostrarAlerta("Seleccione una venta para eliminar", Alert.AlertType.WARNING);
+//             return;
+//         }
+
+//         int ventaId = Integer.parseInt(seleccionada.get(0));
+//         AdministrarVentas.eliminar(ventaId);
+
+//         mostrarAlerta("Venta eliminada correctamente", Alert.AlertType.INFORMATION);
+
+//         tablaVentas.setItems(AdministrarVentas.obtenerTodos());
+//     }
+
+//     @FXML
+//     void regresar(ActionEvent event) {
+//         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+//         Ventana.cambiarEscena(stage, "/GUI/Interfaz/MenuPrincipal.fxml", "Proyecto: Menu Principal");
+//     }
+
+//     private void mostrarAlerta(String mensaje, Alert.AlertType type) {
+//         Alert alert = new Alert(type);
+//         alert.setContentText(mensaje);
+//         alert.showAndWait();
+//     }
+
+// }
