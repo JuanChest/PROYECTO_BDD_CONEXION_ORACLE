@@ -1,6 +1,7 @@
 package GUI.UserControl;
 
 import Util.ContextoConexion;
+import Util.ContextoModulo;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
@@ -88,8 +89,10 @@ public class VentanaPrincipalController {
     void irClientesCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -108,8 +111,10 @@ public class VentanaPrincipalController {
     void irClientesPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -118,8 +123,10 @@ public class VentanaPrincipalController {
     void irClientesTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -128,8 +135,10 @@ public class VentanaPrincipalController {
     void irDetalleVentaCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -138,8 +147,10 @@ public class VentanaPrincipalController {
     void irDetalleVentaPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -148,8 +159,10 @@ public class VentanaPrincipalController {
     void irDetalleVentaTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -158,8 +171,10 @@ public class VentanaPrincipalController {
     void irInventarioCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -168,8 +183,10 @@ public class VentanaPrincipalController {
     void irInventarioPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -178,8 +195,10 @@ public class VentanaPrincipalController {
     void irInventarioTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -218,8 +237,10 @@ public class VentanaPrincipalController {
     void irTiendasCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -228,8 +249,10 @@ public class VentanaPrincipalController {
     void irTiendasPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -238,8 +261,10 @@ public class VentanaPrincipalController {
     void irTiendasTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -248,8 +273,10 @@ public class VentanaPrincipalController {
     void irVentasCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -258,8 +285,10 @@ public class VentanaPrincipalController {
     void irVentasPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -268,8 +297,10 @@ public class VentanaPrincipalController {
     void irVentasTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }

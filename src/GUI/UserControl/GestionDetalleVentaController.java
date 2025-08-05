@@ -1,6 +1,10 @@
 package GUI.UserControl;
 
+import DataAccessComponent.AdministrarDetalleVenta;
 import Util.ContextoConexion;
+import Util.ContextoModulo;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -25,22 +29,22 @@ public class GestionDetalleVentaController {
     private TextField cantidadField;
 
     @FXML
-    private TableColumn<?, ?> colCantidad;
+    private TableColumn<ObservableList<String>, String> colCantidad;
 
     @FXML
-    private TableColumn<?, ?> colDetalleId;
+    private TableColumn<ObservableList<String>, String> colDetalleId;
 
     @FXML
-    private TableColumn<?, ?> colPrecioUnitario;
+    private TableColumn<ObservableList<String>, String> colPrecioUnitario;
 
     @FXML
-    private TableColumn<?, ?> colProductoId;
+    private TableColumn<ObservableList<String>, String> colProductoId;
 
     @FXML
-    private TableColumn<?, ?> colSubtotal;
+    private TableColumn<ObservableList<String>, String> colSubtotal;
 
     @FXML
-    private TableColumn<?, ?> colVentaId;
+    private TableColumn<ObservableList<String>, String> colVentaId;
 
     @FXML
     private TextField detalleIdField;
@@ -100,13 +104,15 @@ public class GestionDetalleVentaController {
     private TextField subtotalField;
 
     @FXML
-    private TableView<?> tablaDetalleVenta;
+    private TableView<ObservableList<String>> tablaDetalleVenta;
 
     @FXML
     private TextField ventaIdField;
 
     @FXML
     public void initialize() {
+        String provincia = ContextoModulo.getProvinciaActual();
+        System.out.println("Provincia actual: " + provincia);
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
             menuClientesPichincha.setText("ClientesGuayas");
             menuClientesCotopaxi.setText("ClientesManabi");
@@ -124,21 +130,63 @@ public class GestionDetalleVentaController {
             menuVentasCotopaxi.setText("VentasManabi");
             menuVentasTungurahua.setText("VentasEsmeraldas");
         }
+        
+        colVentaId.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(0)));
+        colDetalleId.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(1)));
+        colProductoId.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(2)));
+        colCantidad.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(3)));
+        colPrecioUnitario.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(4)));
+        colSubtotal.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(5)));
+        tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos());
     }
 
     @FXML
     void editarDetalleVenta(ActionEvent event) {
-        
+        ObservableList<ObservableList<String>> lista = tablaDetalleVenta.getSelectionModel().getSelectedItems();
+        if (lista.isEmpty()) {
+            System.out.println("Debe seleccionar un detalle de venta para editar.");
+            return;
+        }
+        ObservableList<String> seleccionada = lista.get(0);
+        ventaIdField.setText(seleccionada.get(0));
+        detalleIdField.setText(seleccionada.get(1));
+        productoIdField.setText(seleccionada.get(2));
+        cantidadField.setText(seleccionada.get(3));
+        precioUnitarioField.setText(seleccionada.get(4));
+        subtotalField.setText(seleccionada.get(5));
     }
 
     @FXML
     void eliminarDetalleVenta(ActionEvent event) {
-
+        ObservableList<ObservableList<String>> lista = tablaDetalleVenta.getSelectionModel().getSelectedItems();
+        if (lista.isEmpty()) {
+            System.out.println("Debe seleccionar un detalle de venta para eliminar.");
+            return;
+        }
+        ObservableList<String> seleccionada = lista.get(0);
+        int ventaId = Integer.parseInt(seleccionada.get(0));
+        int detalleId = Integer.parseInt(seleccionada.get(1));
+        int productoId = Integer.parseInt(seleccionada.get(2));
+        AdministrarDetalleVenta.eliminar(ventaId, detalleId, productoId);
+        tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos());
     }
 
     @FXML
     void guardarDetalleVenta(ActionEvent event) {
+        String ventaId = ventaIdField.getText();
+        String detalleId = detalleIdField.getText();
+        String productoId = productoIdField.getText();
+        String cantidad = cantidadField.getText();
+        String precioUnitario = precioUnitarioField.getText();
+        String subtotal = subtotalField.getText();
 
+        if (ventaId.isEmpty() || detalleId.isEmpty() || productoId.isEmpty() || cantidad.isEmpty() || precioUnitario.isEmpty() || subtotal.isEmpty()) {
+            System.out.println("Todos los campos deben ser completados.");
+            return;
+        }
+
+        AdministrarDetalleVenta.insertar(Integer.parseInt(ventaId), Integer.parseInt(detalleId), Integer.parseInt(productoId), Integer.parseInt(cantidad), Double.parseDouble(precioUnitario), Double.parseDouble(subtotal));
+        tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos());
     }
 
     @FXML
@@ -155,8 +203,10 @@ public class GestionDetalleVentaController {
     void irClientesCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -175,8 +225,10 @@ public class GestionDetalleVentaController {
     void irClientesPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -185,8 +237,10 @@ public class GestionDetalleVentaController {
     void irClientesTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -195,8 +249,10 @@ public class GestionDetalleVentaController {
     void irDetalleVentaCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -205,8 +261,10 @@ public class GestionDetalleVentaController {
     void irDetalleVentaPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -215,8 +273,10 @@ public class GestionDetalleVentaController {
     void irDetalleVentaTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -225,8 +285,10 @@ public class GestionDetalleVentaController {
     void irInventarioCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -235,8 +297,10 @@ public class GestionDetalleVentaController {
     void irInventarioPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -245,8 +309,10 @@ public class GestionDetalleVentaController {
     void irInventarioTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -285,8 +351,10 @@ public class GestionDetalleVentaController {
     void irTiendasCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -295,8 +363,10 @@ public class GestionDetalleVentaController {
     void irTiendasPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -305,8 +375,10 @@ public class GestionDetalleVentaController {
     void irTiendasTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -315,8 +387,10 @@ public class GestionDetalleVentaController {
     void irVentasCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -325,8 +399,10 @@ public class GestionDetalleVentaController {
     void irVentasPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -335,8 +411,10 @@ public class GestionDetalleVentaController {
     void irVentasTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
