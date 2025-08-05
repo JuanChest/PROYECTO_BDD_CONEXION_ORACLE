@@ -1,0 +1,33 @@
+-- En el NODO 1
+-- vista que junta todos los datos de clientes y luego se replican en el nodo 2
+
+CREATE OR REPLACE VIEW CLIENTE AS
+SELECT * FROM cliente_pichincha
+UNION ALL
+SELECT * FROM cliente_cotopaxi
+UNION ALL
+SELECT * FROM cliente_tungurahua
+UNION ALL
+SELECT * FROM cliente_guayas@db_link_nodo2
+UNION ALL
+SELECT * FROM cliente_manabi@db_link_nodo2
+UNION ALL
+SELECT * FROM cliente_esmeraldas@db_link_nodo2;
+
+
+-- Por ver
+CREATE OR REPLACE TRIGGER trg_insert_admin_cliente
+INSTEAD OF INSERT ON ADMIN_CLIENTE
+FOR EACH ROW
+BEGIN
+  IF :NEW.provincia = 'Pichincha' THEN
+    INSERT INTO CLIENTE_PICHINCHA VALUES (:NEW.id_cliente, :NEW.nombre, :NEW.direccion, :NEW.provincia);
+  ELSIF :NEW.provincia = 'Cotopaxi' THEN
+    INSERT INTO CLIENTE_COTOPAXI VALUES (:NEW.id_cliente, :NEW.nombre, :NEW.direccion, :NEW.provincia);
+  ELSIF :NEW.provincia = 'Tungurahua' THEN
+    INSERT INTO CLIENTE_TUNGURAHUA VALUES (:NEW.id_cliente, :NEW.nombre, :NEW.direccion, :NEW.provincia);
+  ELSE
+    RAISE_APPLICATION_ERROR(-20001, 'Provincia no gestionada por Nodo 1');
+  END IF;
+END;
+/

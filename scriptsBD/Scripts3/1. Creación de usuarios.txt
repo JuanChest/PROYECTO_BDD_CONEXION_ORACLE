@@ -1,0 +1,20 @@
+-- Usuario nodo1
+create user nodo1 identified by nodo1
+default tablespace users
+temporary tablespace temp
+profile default;
+
+grant connect, resource to nodo1; 
+alter user nodo1 quota unlimited on users;
+grant connect, create database link to nodo1;
+
+-- Usuario nodo2
+create user nodo2 identified by nodo2
+default tablespace users
+temporary tablespace temp
+profile default;
+
+grant connect, resource to nodo2; 
+alter user nodo2 quota unlimited on users;
+grant connect, create database link to nodo2;
+

@@ -1,0 +1,17 @@
+-- NODO1
+CREATE DATABASE LINK db_link_nodo2
+CONNECT TO nodo2 IDENTIFIED BY nodo2
+USING 'TNS_REMOTO';
+
+-- NODO2
+CREATE DATABASE LINK db_link_nodo1
+CONNECT TO nodo1 IDENTIFIED BY nodo1
+USING 'TNS_MASTER';
+
+
+-- PRUEBAS DE CONEXION
+-- Conexión nodo1 a nodo2
+SELECT * FROM CLIENTE@db_link_nodo2;
+
+-- Conexión nodo2 a nodo1
+SELECT * FROM PRODUCTO@db_link_nodo1;
