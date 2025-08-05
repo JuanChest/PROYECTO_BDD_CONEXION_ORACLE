@@ -1,5 +1,6 @@
 package GUI.UserControl;
 
+import Util.ContextoConexion;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -108,6 +109,27 @@ public class GestionClienteController {
 
     @FXML
     private TextField telefonoField;
+
+    @FXML
+    public void initialize() {
+        if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            menuClientesPichincha.setText("ClientesGuayas");
+            menuClientesCotopaxi.setText("ClientesManabi");
+            menuClientesTungurahua.setText("ClientesEsmeraldas");
+            menuDetalleVentaPichincha.setText("DetalleVentaGuayas");
+            menuDetalleVentaCotopaxi.setText("DetalleVentaManabi");
+            menuDetalleVentaTungurahua.setText("DetalleVentaEsmeraldas");
+            menuInventarioPichincha.setText("InventarioGuayas");
+            menuInventarioCotopaxi.setText("InventarioManabi");
+            menuInventarioTungurahua.setText("InventarioEsmeraldas");
+            menuTiendasPichincha.setText("TiendasGuayas");
+            menuTiendasCotopaxi.setText("TiendasManabi");
+            menuTiendasTungurahua.setText("TiendasEsmeraldas");
+            menuVentasPichincha.setText("VentasGuayas");
+            menuVentasCotopaxi.setText("VentasManabi");
+            menuVentasTungurahua.setText("VentasEsmeraldas");
+        }
+    }
 
     @FXML
     void editarCliente(ActionEvent event) {
@@ -225,6 +247,7 @@ public class GestionClienteController {
     }
 
 }
+
 
 // package GUI.UserControl;
 

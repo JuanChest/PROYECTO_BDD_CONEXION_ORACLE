@@ -12,7 +12,7 @@ public class MainMaster extends Application {
         // Aquí defines si estás trabajando con MASTER o REMOTO
         ContextoConexion.setTipoConexion(ContextoConexion.TipoConexion.MASTER);
 
-        Parent root = FXMLLoader.load(getClass().getResource("/GUI/Interfaz/MenuPrincipal.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/GUI/Interfaz/PantallaPrincipal.fxml"));
         Scene scene = new Scene(root, 800, 600);
         primaryStage.setTitle("Proyecto: Menu Principal (Master)");
         primaryStage.setScene(scene);

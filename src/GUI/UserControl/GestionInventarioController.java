@@ -1,5 +1,6 @@
 package GUI.UserControl;
 
+import Util.ContextoConexion;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -44,6 +45,15 @@ public class GestionInventarioController {
     private MenuItem menuClientesTungurahua;
 
     @FXML
+    private MenuItem menuDetalleVentaCotopaxi;
+
+    @FXML
+    private MenuItem menuDetalleVentaPichincha;
+
+    @FXML
+    private MenuItem menuDetalleVentaTungurahua;
+
+    @FXML
     private MenuItem menuInventarioCotopaxi;
 
     @FXML
@@ -75,6 +85,27 @@ public class GestionInventarioController {
 
     @FXML
     private TextField tiendaIdField;
+
+    @FXML
+    public void initialize() {
+        if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            menuClientesPichincha.setText("ClientesGuayas");
+            menuClientesCotopaxi.setText("ClientesManabi");
+            menuClientesTungurahua.setText("ClientesEsmeraldas");
+            menuDetalleVentaPichincha.setText("DetalleVentaGuayas");
+            menuDetalleVentaCotopaxi.setText("DetalleVentaManabi");
+            menuDetalleVentaTungurahua.setText("DetalleVentaEsmeraldas");
+            menuInventarioPichincha.setText("InventarioGuayas");
+            menuInventarioCotopaxi.setText("InventarioManabi");
+            menuInventarioTungurahua.setText("InventarioEsmeraldas");
+            menuTiendasPichincha.setText("TiendasGuayas");
+            menuTiendasCotopaxi.setText("TiendasManabi");
+            menuTiendasTungurahua.setText("TiendasEsmeraldas");
+            menuVentasPichincha.setText("VentasGuayas");
+            menuVentasCotopaxi.setText("VentasManabi");
+            menuVentasTungurahua.setText("VentasEsmeraldas");
+        }
+    }
 
     @FXML
     void editarInventario(ActionEvent event) {

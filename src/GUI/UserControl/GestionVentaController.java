@@ -1,9 +1,11 @@
 package GUI.UserControl;
 
+import Util.ContextoConexion;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -41,6 +43,51 @@ public class GestionVentaController {
     private DatePicker fechaPicker;
 
     @FXML
+    private MenuItem menuClientesCotopaxi;
+
+    @FXML
+    private MenuItem menuClientesPichincha;
+
+    @FXML
+    private MenuItem menuClientesTungurahua;
+
+    @FXML
+    private MenuItem menuDetalleVentaCotopaxi;
+
+    @FXML
+    private MenuItem menuDetalleVentaPichincha;
+
+    @FXML
+    private MenuItem menuDetalleVentaTungurahua;
+
+    @FXML
+    private MenuItem menuInventarioCotopaxi;
+
+    @FXML
+    private MenuItem menuInventarioPichincha;
+
+    @FXML
+    private MenuItem menuInventarioTungurahua;
+
+    @FXML
+    private MenuItem menuTiendasCotopaxi;
+
+    @FXML
+    private MenuItem menuTiendasPichincha;
+
+    @FXML
+    private MenuItem menuTiendasTungurahua;
+
+    @FXML
+    private MenuItem menuVentasCotopaxi;
+
+    @FXML
+    private MenuItem menuVentasPichincha;
+
+    @FXML
+    private MenuItem menuVentasTungurahua;
+
+    @FXML
     private TableView<?> tablaVentas;
 
     @FXML
@@ -51,6 +98,27 @@ public class GestionVentaController {
 
     @FXML
     private TextField ventaIdField;
+
+    @FXML
+    public void initialize() {
+        if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            menuClientesPichincha.setText("ClientesGuayas");
+            menuClientesCotopaxi.setText("ClientesManabi");
+            menuClientesTungurahua.setText("ClientesEsmeraldas");
+            menuDetalleVentaPichincha.setText("DetalleVentaGuayas");
+            menuDetalleVentaCotopaxi.setText("DetalleVentaManabi");
+            menuDetalleVentaTungurahua.setText("DetalleVentaEsmeraldas");
+            menuInventarioPichincha.setText("InventarioGuayas");
+            menuInventarioCotopaxi.setText("InventarioManabi");
+            menuInventarioTungurahua.setText("InventarioEsmeraldas");
+            menuTiendasPichincha.setText("TiendasGuayas");
+            menuTiendasCotopaxi.setText("TiendasManabi");
+            menuTiendasTungurahua.setText("TiendasEsmeraldas");
+            menuVentasPichincha.setText("VentasGuayas");
+            menuVentasCotopaxi.setText("VentasManabi");
+            menuVentasTungurahua.setText("VentasEsmeraldas");
+        }
+    }
 
     @FXML
     void editarVenta(ActionEvent event) {
@@ -168,6 +236,7 @@ public class GestionVentaController {
     }
 
 }
+
 
 // package GUI.UserControl;
 

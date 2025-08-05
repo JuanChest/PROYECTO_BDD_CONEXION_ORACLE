@@ -17,6 +17,15 @@ public class VentanaPrincipalController {
     private MenuItem menuClientesTungurahua;
 
     @FXML
+    private MenuItem menuDetalleVentaCotopaxi;
+
+    @FXML
+    private MenuItem menuDetalleVentaPichincha;
+
+    @FXML
+    private MenuItem menuDetalleVentaTungurahua;
+
+    @FXML
     private MenuItem menuInventarioCotopaxi;
 
     @FXML
@@ -49,6 +58,18 @@ public class VentanaPrincipalController {
             menuClientesPichincha.setText("ClientesGuayas");
             menuClientesCotopaxi.setText("ClientesManabi");
             menuClientesTungurahua.setText("ClientesEsmeraldas");
+            menuDetalleVentaPichincha.setText("DetalleVentaGuayas");
+            menuDetalleVentaCotopaxi.setText("DetalleVentaManabi");
+            menuDetalleVentaTungurahua.setText("DetalleVentaEsmeraldas");
+            menuInventarioPichincha.setText("InventarioGuayas");
+            menuInventarioCotopaxi.setText("InventarioManabi");
+            menuInventarioTungurahua.setText("InventarioEsmeraldas");
+            menuTiendasPichincha.setText("TiendasGuayas");
+            menuTiendasCotopaxi.setText("TiendasManabi");
+            menuTiendasTungurahua.setText("TiendasEsmeraldas");
+            menuVentasPichincha.setText("VentasGuayas");
+            menuVentasCotopaxi.setText("VentasManabi");
+            menuVentasTungurahua.setText("VentasEsmeraldas");
         }
     }
 
