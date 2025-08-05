@@ -5,26 +5,55 @@ import java.util.Map;
 
 public class TablaDistribuida {
 
-    private static final Map<String, String> nombresRemotos = new HashMap<>();
+    private static final Map<String, Map<String, String>> nombresFragmentados = new HashMap<>();
 
     static {
         // Tablas replicadas (materialized views)
-        nombresRemotos.put("CLIENTE", "CLIENTE_REPLICA");
-        nombresRemotos.put("PRODUCTO", "PRODUCTO_REPLICA");
-        nombresRemotos.put("PROVEEDOR", "PROVEEDOR_REPLICA");
+        Map<String, String> replicadas = new HashMap<>();
+        replicadas.put("CLIENTE", "CLIENTE_REP");
+        replicadas.put("PRODUCTO", "PRODUCTO_REP");
+        replicadas.put("PROVEEDOR", "PROVEEDOR_REP");
+        nombresFragmentados.put("REPLICADAS", replicadas);
 
-        // Tablas fragmentadas horizontalmente
-        nombresRemotos.put("VENTAS", "VENTAS_NORTE");
-        nombresRemotos.put("TIENDA", "TIENDA_NORTE");
-        nombresRemotos.put("INVENTARIO", "INVENTARIO_NORTE");
-        nombresRemotos.put("DETALLE_VENTA", "DETALLE_VENTA_NORTE");
+        // Tablas fragmentadas por provincia
+        Map<String, String> detalleVenta = new HashMap<>();
+        detalleVenta.put("Cotopaxi", "DETALLE_VENTA_COTOPAXI");
+        detalleVenta.put("Pichincha", "DETALLE_VENTA_PICHINCHA");
+        detalleVenta.put("Tungurahua", "DETALLE_VENTA_TUNGURAHUA");
+        detalleVenta.put("Manabi", "DETALLE_VENTA_MANABI");
+        detalleVenta.put("Guayas", "DETALLE_VENTA_GUAYAS");
+        detalleVenta.put("Esmeraldas", "DETALLE_VENTA_ESMERALDAS");
+
+        Map<String, String> ventas = new HashMap<>();
+        ventas.put("Cotopaxi", "VENTAS_COTOPAXI");
+        ventas.put("Pichincha", "VENTAS_PICHINCHA");
+        ventas.put("Tungurahua", "VENTAS_TUNGURAHUA");
+        ventas.put("Manabi", "VENTAS_MANABI");
+        ventas.put("Guayas", "VENTAS_GUAYAS");
+        ventas.put("Esmeraldas", "VENTAS_ESMERALDAS");
+
+        // Agrega más mapas para INVENTARIO, TIENDA, etc.
+
+        nombresFragmentados.put("DETALLE_VENTA", detalleVenta);
+        nombresFragmentados.put("VENTAS", ventas);
+        // ... otras tablas fragmentadas
     }
 
-    public static String obtenerNombre(String base) {
+    public static String obtenerNombre(String base, String provincia) {
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.MASTER) {
             return base;
         } else {
-            return nombresRemotos.getOrDefault(base, base);
+            // Para replicadas
+            if (nombresFragmentados.containsKey("REPLICADAS") && nombresFragmentados.get("REPLICADAS").containsKey(base)) {
+                return nombresFragmentados.get("REPLICADAS").get(base);
+            }
+            // Para tablas fragmentadas
+            if (nombresFragmentados.containsKey(base)) {
+                Map<String, String> porProvincia = nombresFragmentados.get(base);
+                return porProvincia.getOrDefault(provincia, base);
+            }
+            // Default
+            return base;
         }
     }
 }

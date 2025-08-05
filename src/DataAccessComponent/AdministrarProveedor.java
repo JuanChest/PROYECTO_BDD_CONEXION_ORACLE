@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Util.ConexionFactory;
+import Util.ContextoModulo;
 import Util.TablaDistribuida;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,7 +16,8 @@ import javafx.collections.ObservableList;
 public class AdministrarProveedor {
 
     public static void insertar(int id, String nombre, String email, String telefono) {
-        String tabla = TablaDistribuida.obtenerNombre("PROVEEDOR");
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("PROVEEDOR", provincia);
         String sql = "INSERT INTO " + tabla + " (PROVEEDOR_ID, NOMBRE, EMAIL, TELEFONO) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConexionFactory.obtenerConexion();
@@ -31,7 +33,8 @@ public class AdministrarProveedor {
     }
 
     public static void actualizar(int id, String nombre, String email, String telefono) {
-        String tabla = TablaDistribuida.obtenerNombre("PROVEEDOR");
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("PROVEEDOR", provincia);
         String sql = "UPDATE " + tabla + " SET NOMBRE=?, EMAIL=?, TELEFONO=? WHERE PROVEEDOR_ID=?";
 
         try (Connection conn = ConexionFactory.obtenerConexion();
@@ -50,7 +53,8 @@ public class AdministrarProveedor {
         try (Connection conn = ConexionFactory.obtenerConexion()) {
             conn.setAutoCommit(false);
 
-            String tablaProducto = TablaDistribuida.obtenerNombre("PRODUCTO");
+            String provincia = ContextoModulo.getProvinciaActual();
+            String tablaProducto = TablaDistribuida.obtenerNombre("PRODUCTO", provincia);
             String tablaProductoInventario = "PRODUCTO_INVENTARIO"; // Asumiendo que esta tabla no cambia de nombre
             String tablaDetalleVenta = "DETALLE_VENTA"; // Asumiendo fija
 
@@ -84,13 +88,13 @@ public class AdministrarProveedor {
             }
 
             // 4. Eliminar productos del proveedor
-            try (PreparedStatement psDelProductos = conn.prepareStatement("DELETE FROM " + TablaDistribuida.obtenerNombre("PRODUCTO") + " WHERE PROVEEDOR_ID = ?")) {
+            try (PreparedStatement psDelProductos = conn.prepareStatement("DELETE FROM " + TablaDistribuida.obtenerNombre("PRODUCTO", provincia) + " WHERE PROVEEDOR_ID = ?")) {
                 psDelProductos.setInt(1, proveedorId);
                 psDelProductos.executeUpdate();
             }
 
             // 5. Finalmente, eliminar proveedor
-            try (PreparedStatement psProveedor = conn.prepareStatement("DELETE FROM " + TablaDistribuida.obtenerNombre("PROVEEDOR") + " WHERE PROVEEDOR_ID = ?")) {
+            try (PreparedStatement psProveedor = conn.prepareStatement("DELETE FROM " + TablaDistribuida.obtenerNombre("PROVEEDOR", provincia) + " WHERE PROVEEDOR_ID = ?")) {
                 psProveedor.setInt(1, proveedorId);
                 psProveedor.executeUpdate();
             }
@@ -105,7 +109,8 @@ public class AdministrarProveedor {
 
     public static ObservableList<ObservableList<String>> obtenerTodos() {
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
-        String tabla = TablaDistribuida.obtenerNombre("PROVEEDOR");
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("PROVEEDOR", provincia);
         String sql = "SELECT * FROM " + tabla;
 
         try (Connection conn = ConexionFactory.obtenerConexion();

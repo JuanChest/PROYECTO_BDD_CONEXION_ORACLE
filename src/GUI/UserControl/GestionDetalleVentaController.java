@@ -137,7 +137,7 @@ public class GestionDetalleVentaController {
         colCantidad.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(3)));
         colPrecioUnitario.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(4)));
         colSubtotal.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(5)));
-        tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos());
+        tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos(provincia));
     }
 
     @FXML
@@ -168,7 +168,7 @@ public class GestionDetalleVentaController {
         int detalleId = Integer.parseInt(seleccionada.get(1));
         int productoId = Integer.parseInt(seleccionada.get(2));
         AdministrarDetalleVenta.eliminar(ventaId, detalleId, productoId);
-        tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos());
+        tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos(ContextoModulo.getProvinciaActual()));
     }
 
     @FXML
@@ -186,7 +186,7 @@ public class GestionDetalleVentaController {
         }
 
         AdministrarDetalleVenta.insertar(Integer.parseInt(ventaId), Integer.parseInt(detalleId), Integer.parseInt(productoId), Integer.parseInt(cantidad), Double.parseDouble(precioUnitario), Double.parseDouble(subtotal));
-        tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos());
+        tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos(ContextoModulo.getProvinciaActual()));
     }
 
     @FXML
@@ -484,7 +484,7 @@ public class GestionDetalleVentaController {
 //         colPrecioUnitario.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(4)));
 //         colSubtotal.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(5)));
 
-//         tablaDetalles.setItems(AdministrarDetalleVenta.obtenerTodos());
+//         tablaDetalles.setItems(AdministrarDetalleVenta.obtenerTodos(ContextoModulo.getProvinciaActual()));
 //         ajustarInterfazPorConexion();
 //     }
     
@@ -545,7 +545,7 @@ public class GestionDetalleVentaController {
 //         int detalleId = Integer.parseInt(seleccionada.get(1));
 //         int productoId = Integer.parseInt(seleccionada.get(2));
 //         AdministrarDetalleVenta.eliminar(ventaId, detalleId, productoId);
-//         tablaDetalles.setItems(AdministrarDetalleVenta.obtenerTodos());
+//         tablaDetalles.setItems(AdministrarDetalleVenta.obtenerTodos(ContextoModulo.getProvinciaActual()));
 //         mostrarAlerta("Detalle de venta eliminado correctamente.", Alert.AlertType.INFORMATION);
 //     }
 

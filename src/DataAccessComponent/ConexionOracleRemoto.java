@@ -15,8 +15,8 @@ public class ConexionOracleRemoto {
     // private static final String URL = URL_VPN;
     private static final String URL = URL_LOCAL;
 
-    private static final String USER = "tiendasNorte";
-    private static final String PASSWORD = "tiendasnorte";
+    private static final String USER = "nodo2";
+    private static final String PASSWORD = "nodo2";
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);

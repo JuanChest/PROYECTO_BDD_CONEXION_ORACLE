@@ -7,13 +7,15 @@ import java.sql.SQLException;
 
 import Util.ConexionFactory;
 import Util.ContextoConexion;
+import Util.ContextoModulo;
 import Util.TablaDistribuida;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class AdministrarDetalleVenta {
     public static void insertar(int idVenta, int idDetalle, int idProducto, int cantidad, double precioUnitario, double subtotal) {
-        String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA");
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA", provincia);
         String sql = "INSERT INTO " + tabla + " (VENTA_ID, DETALLE_ID, PRODUCTO_ID, CANTIDAD, PRECIO_UNITARIO, SUB_TOTAL) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConexionFactory.obtenerConexion();
@@ -35,11 +37,11 @@ public class AdministrarDetalleVenta {
             System.out.println("No se permite actualizar desde una conexión remota.");
             return;
         }
-
-        String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA");
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA", provincia);
         String sql = "UPDATE " + tabla + " SET CANTIDAD = ?, PRECIO_UNITARIO = ?, SUB_TOTAL = ? WHERE VENTA_ID = ? AND DETALLE_ID = ? AND PRODUCTO_ID = ?";
         try (Connection conn = ConexionFactory.obtenerConexion();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, cantidad);
             stmt.setDouble(2, precioUnitario);
             stmt.setDouble(3, subtotal);
@@ -57,43 +59,45 @@ public class AdministrarDetalleVenta {
             System.out.println("No se permite eliminar desde una conexión remota.");
             return;
         }
-        String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA");
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA", provincia);
         String sql = "DELETE FROM " + tabla + " WHERE VENTA_ID = ? AND DETALLE_ID = ? AND PRODUCTO_ID = ?";
         try (Connection conn = ConexionFactory.obtenerConexion();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, idVenta);
-                stmt.setInt(2, idDetalle);
-                stmt.setInt(3, idProducto);
-                stmt.executeUpdate();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idVenta);
+            stmt.setInt(2, idDetalle);
+            stmt.setInt(3, idProducto);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
     
-    public static ObservableList<ObservableList<String>> obtenerTodos() {
-        ObservableList<ObservableList<String>> resultado = FXCollections.observableArrayList();
-        
-        try (Connection conn = ConexionFactory.obtenerConexion()) {;
-            String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA");
-            String sql = "SELECT * FROM " + tabla;
-            try (PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    ObservableList<String> fila = FXCollections.observableArrayList();
-                    fila.add(String.valueOf(rs.getInt("VENTA_ID")));
-                    fila.add(String.valueOf(rs.getInt("DETALLE_ID")));
-                    fila.add(String.valueOf(rs.getInt("PRODUCTO_ID")));
-                    fila.add(String.valueOf(rs.getDouble("CANTIDAD")));
-                    fila.add(String.valueOf(rs.getDouble("PRECIO_UNITARIO")));
-                    fila.add(String.valueOf(rs.getDouble("SUB_TOTAL")));
-                    resultado.add(fila);
-                }
-            } 
-        } catch (SQLException e) {
-                    e.printStackTrace();
+    public static ObservableList<ObservableList<String>> obtenerTodos(String provincia) {
+    ObservableList<ObservableList<String>> resultado = FXCollections.observableArrayList();
+
+    try (Connection conn = ConexionFactory.obtenerConexion()) {
+        String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA", provincia);
+        String sql = "SELECT * FROM " + tabla;
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                ObservableList<String> fila = FXCollections.observableArrayList();
+                fila.add(String.valueOf(rs.getInt("VENTA_ID")));
+                fila.add(String.valueOf(rs.getInt("DETALLE_ID")));
+                fila.add(String.valueOf(rs.getInt("PRODUCTO_ID")));
+                fila.add(String.valueOf(rs.getDouble("CANTIDAD")));
+                fila.add(String.valueOf(rs.getDouble("PRECIO_UNITARIO")));
+                fila.add(String.valueOf(rs.getDouble("SUB_TOTAL")));
+                resultado.add(fila);
+            }
         }
-        return resultado;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return resultado;
+}
+
 
     
 }

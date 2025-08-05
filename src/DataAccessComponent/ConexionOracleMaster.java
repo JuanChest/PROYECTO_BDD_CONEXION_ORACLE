@@ -15,8 +15,8 @@ public class ConexionOracleMaster {
     private static final String URL = URL_LOCAL;
     // private static final String URL = URL_VPN;
 
-    private static final String USER = "tiendasMaster";
-    private static final String PASSWORD = "tiendasmaster";
+    private static final String USER = "nodo1";
+    private static final String PASSWORD = "nodo1";
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
