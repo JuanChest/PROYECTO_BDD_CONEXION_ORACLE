@@ -127,7 +127,7 @@ public class GestionDetalleVentaController {
 
     @FXML
     void editarDetalleVenta(ActionEvent event) {
-
+        
     }
 
     @FXML
