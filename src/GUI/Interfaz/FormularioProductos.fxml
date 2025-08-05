@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.UserControl.FormularioProductosController">
+    <VBox alignment="CENTER" layoutX="51.2" prefHeight="425.0" prefWidth="299.0" spacing="15.0" AnchorPane.leftAnchor="51.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="0.0">
+
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Registro de Producto" textFill="WHITE" />
+
+        <TextField fx:id="txtProductoID" promptText="Producto_ID" />
+        <TextField fx:id="txtProveedorID" promptText="Proveedor_ID" />
+        <TextField fx:id="txtNombre" promptText="Nombre" />
+        <TextField fx:id="txtPrecio" promptText="Precio" />
+
+        <Button fx:id="btnGuardar" onAction="#guardarProducto" style="-fx-background-color: #146686; -fx-text-fill: white;" text="Guardar" />
+
+    </VBox>
+   <Button fx:id="btnGuardar1" layoutX="323.0" layoutY="385.0" onAction="#regresar" style="-fx-background-color: #146686; -fx-text-fill: white;" text="Regresar" />
+</AnchorPane>

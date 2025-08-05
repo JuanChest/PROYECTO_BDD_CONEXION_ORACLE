@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #12364d;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.UserControl.FormularioVentasController">
+    <VBox alignment="CENTER" spacing="15.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
+
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Registro de Ventas" textFill="WHITE" />
+
+        <TextField fx:id="txtVentaID" promptText="Venta_ID" />
+        <TextField fx:id="txtTiendaID" promptText="Tienda_ID" />
+        <TextField fx:id="txtClienteID" promptText="Cliente_ID" />
+      <DatePicker fx:id="fecha" onAction="#getDate" promptText="Seleccione la fecha" />
+        <TextField fx:id="txtFecha" promptText="Fecha (YYYY-MM-DD)" />
+      <TextField fx:id="txtTotal" promptText="Total" />
+
+        <Button fx:id="btnGuardar" onAction="#guardarVentas" style="-fx-background-color: #1d9ec8; -fx-text-fill: white;" text="Guardar" />
+
+    </VBox>
+   <Button fx:id="btnGuardar1" layoutX="319.0" layoutY="361.0" onAction="#regresar" style="-fx-background-color: #1d9ec8; -fx-text-fill: white;" text="Regresar" />
+</AnchorPane>
