@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #005F73;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.UserControl.MenuPrincipalController">
+
+    <VBox alignment="CENTER" spacing="20" AnchorPane.bottomAnchor="50" AnchorPane.leftAnchor="50" AnchorPane.rightAnchor="50" AnchorPane.topAnchor="50">
+
+        <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Menú Principal" textFill="WHITE" />
+
+        <Button fx:id="btnTienda" onAction="#entrarGestionTienda" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Tiendas" />
+        <Button fx:id="btnInventario" onAction="#entrarGestionInventario" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Inventario" />
+        <Button fx:id="btnVentas" onAction="#entrarGestionVentas" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Ventas" />
+        <Button fx:id="btnProductos" onAction="#entrarGestionProductos" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Productos" />
+        <Button fx:id="btnProveedores" onAction="#entrarGestionProveedores" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Proveedores" />
+        <Button fx:id="btnClientes" onAction="#entrarClientes" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión de Clientes" />
+      <Button fx:id="btnDetalleVenta" onAction="#entrarDetalleVenta" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-text-fill: white; -fx-font-size: 16px;" text="Gestión Detalle-Venta" />
+        <Button fx:id="btnAuditar" onAction="#entrarAuditar" prefHeight="37.0" prefWidth="190.0" style="-fx-background-color: #FF8614; -fx-font-size: 16; -fx-text-fill: white;" text="Auditar" />
+    </VBox>
+
+</AnchorPane>

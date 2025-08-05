@@ -183,9 +183,9 @@ public class GestionProveedorController {
     void irDetalleVentaCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVenta.fxml", "Proyecto: Menu Principal (Remoto)");
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVenta.fxml", "Proyecto: Menu Principal (Master)");
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
 
@@ -193,9 +193,9 @@ public class GestionProveedorController {
     void irDetalleVentaPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVenta.fxml", "Proyecto: Menu Principal (Remoto)");
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVenta.fxml", "Proyecto: Menu Principal (Master)");
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
 
@@ -203,9 +203,9 @@ public class GestionProveedorController {
     void irDetalleVentaTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVenta.fxml", "Proyecto: Menu Principal (Remoto)");
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVenta.fxml", "Proyecto: Menu Principal (Master)");
+            Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
 
