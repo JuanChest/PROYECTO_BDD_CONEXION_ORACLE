@@ -138,23 +138,125 @@ public class GestionDetalleVentaController {
         colPrecioUnitario.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(4)));
         colSubtotal.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(5)));
         tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos(provincia));
+        // Calcular subtotal automáticamente cuando cambie cantidad o precio unitario
+        cantidadField.textProperty().addListener((obs, oldVal, newVal) -> calcularSubtotal());
+        precioUnitarioField.textProperty().addListener((obs, oldVal, newVal) -> calcularSubtotal());
+        tablaDetalleVenta.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+        if (newSelection != null) {
+            ventaIdField.setText(newSelection.get(0));
+            detalleIdField.setText(newSelection.get(1));
+            productoIdField.setText(newSelection.get(2));
+            cantidadField.setText(newSelection.get(3));
+            precioUnitarioField.setText(newSelection.get(4));
+            subtotalField.setText(newSelection.get(5));
+
+            ventaIdField.setEditable(false);
+            detalleIdField.setEditable(false);
+            productoIdField.setEditable(false);
+            subtotalField.setEditable(false);
+            cantidadField.setEditable(true);
+            precioUnitarioField.setEditable(true);
+        } else {
+            // Limpiar los campos
+            ventaIdField.clear();
+            detalleIdField.clear();
+            productoIdField.clear();
+            cantidadField.clear();
+            precioUnitarioField.clear();
+            subtotalField.clear();
+
+            // Opcional: volver editables si quieres permitir inserción nueva
+            ventaIdField.setEditable(true);
+            detalleIdField.setEditable(true);
+            productoIdField.setEditable(true);
+            cantidadField.setEditable(true);
+            precioUnitarioField.setEditable(true);
+            subtotalField.setEditable(false); // este lo calculas automáticamente
+        }
+    });
+
+        tablaDetalleVenta.setOnMouseClicked(event -> {
+        if (event.getClickCount() == 2) {
+            // Doble clic
+            ObservableList<String> selectedItem = tablaDetalleVenta.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                tablaDetalleVenta.getSelectionModel().clearSelection();
+
+                // Limpiar los campos
+                ventaIdField.clear();
+                detalleIdField.clear();
+                productoIdField.clear();
+                cantidadField.clear();
+                precioUnitarioField.clear();
+                subtotalField.clear();
+
+                // Hacer los campos editables nuevamente si quieres permitir inserciones
+                ventaIdField.setEditable(true);
+                detalleIdField.setEditable(true);
+                productoIdField.setEditable(true);
+                cantidadField.setEditable(true);
+                precioUnitarioField.setEditable(true);
+                subtotalField.setEditable(false);
+            }
+        }
+    });
+
+
     }
+
+    private void calcularSubtotal() {
+        try {
+            String cantidadText = cantidadField.getText().replace(",", ".");
+            String precioText = precioUnitarioField.getText().replace(",", ".");
+
+            int cantidad = Integer.parseInt(cantidadText);
+            double precioUnitario = Double.parseDouble(precioText);
+
+            double subtotal = cantidad * precioUnitario;
+            subtotalField.setText(String.format("%.2f", subtotal));
+        } catch (NumberFormatException e) {
+            // Si hay campos vacíos o con texto inválido, simplemente no hacer nada
+            subtotalField.setText("");
+        }
+    }
+
 
     @FXML
     void editarDetalleVenta(ActionEvent event) {
-        ObservableList<ObservableList<String>> lista = tablaDetalleVenta.getSelectionModel().getSelectedItems();
-        if (lista.isEmpty()) {
-            System.out.println("Debe seleccionar un detalle de venta para editar.");
+        // Validar campos vacíos antes de convertir
+        if (ventaIdField.getText().isEmpty() || detalleIdField.getText().isEmpty() || productoIdField.getText().isEmpty() ||
+            cantidadField.getText().isEmpty() || precioUnitarioField.getText().isEmpty() || subtotalField.getText().isEmpty()) {
+            System.out.println("Error: Todos los campos deben estar llenos.");
             return;
         }
-        ObservableList<String> seleccionada = lista.get(0);
-        ventaIdField.setText(seleccionada.get(0));
-        detalleIdField.setText(seleccionada.get(1));
-        productoIdField.setText(seleccionada.get(2));
-        cantidadField.setText(seleccionada.get(3));
-        precioUnitarioField.setText(seleccionada.get(4));
-        subtotalField.setText(seleccionada.get(5));
+        // // Imprimir los valores para depuración
+        // System.out.println("ventaIdField: " + ventaIdField.getText());
+        // System.out.println("detalleIdField: " + detalleIdField.getText());
+        // System.out.println("productoIdField: " + productoIdField.getText());
+        // System.out.println("cantidadField: " + cantidadField.getText());
+        // System.out.println("precioUnitarioField: " + precioUnitarioField.getText());
+        // System.out.println("subtotalField: " + subtotalField.getText());
+
+        try {
+            int ventaId = Integer.parseInt(ventaIdField.getText());
+            int detalleId = Integer.parseInt(detalleIdField.getText());
+            int productoId = Integer.parseInt(productoIdField.getText());
+            int cantidad = Integer.parseInt(cantidadField.getText());
+            // Si usas coma decimal, reemplaza coma por punto
+            String precioStr = precioUnitarioField.getText().replace(',', '.');
+            String subtotalStr = subtotalField.getText().replace(',', '.');
+
+            double precioUnitario = Double.parseDouble(precioStr);
+            double subtotal = Double.parseDouble(subtotalStr);
+
+            AdministrarDetalleVenta.actualizar(ventaId, detalleId, productoId, cantidad, precioUnitario, subtotal);
+
+            tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos(ContextoModulo.getProvinciaActual()));
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Debe ingresar datos válidos para actualizar.");
+        }
     }
+
 
     @FXML
     void eliminarDetalleVenta(ActionEvent event) {
@@ -185,9 +287,27 @@ public class GestionDetalleVentaController {
             return;
         }
 
-        AdministrarDetalleVenta.insertar(Integer.parseInt(ventaId), Integer.parseInt(detalleId), Integer.parseInt(productoId), Integer.parseInt(cantidad), Double.parseDouble(precioUnitario), Double.parseDouble(subtotal));
+        int idVenta = Integer.parseInt(ventaId);
+        int idDetalle = Integer.parseInt(detalleId);
+        int idProducto = Integer.parseInt(productoId);
+
+        if (AdministrarDetalleVenta.existeDetalle(idVenta, idDetalle, idProducto)) {
+            System.out.println("Error: Ya existe un detalle de venta con esa clave primaria.");
+            return;
+        }
+
+        AdministrarDetalleVenta.insertar(
+            idVenta,
+            idDetalle,
+            idProducto,
+            Integer.parseInt(cantidad),
+            Double.parseDouble(precioUnitario),
+            Double.parseDouble(subtotal)
+        );
+
         tablaDetalleVenta.setItems(AdministrarDetalleVenta.obtenerTodos(ContextoModulo.getProvinciaActual()));
     }
+
 
     @FXML
     void irAuditoria(ActionEvent event) {
@@ -420,146 +540,3 @@ public class GestionDetalleVentaController {
     }
 
 }
-
-// package GUI.UserControl;
-
-// import DataAccessComponent.AdministrarDetalleVenta;
-// import javafx.beans.property.ReadOnlyObjectWrapper;
-// import javafx.collections.ObservableList;
-// import javafx.event.ActionEvent;
-// import javafx.fxml.FXML;
-// import javafx.fxml.FXMLLoader;
-// import javafx.scene.Node;
-// import javafx.scene.Parent;
-// import javafx.scene.Scene;
-// import javafx.scene.control.Alert;
-// import javafx.scene.control.Button;
-// import javafx.scene.control.TableColumn;
-// import javafx.scene.control.TableView;
-// import javafx.stage.Stage;
-
-// public class GestionDetalleVentaController {
-
-//     @FXML
-//     private Button btnAgregar;
-
-//     @FXML
-//     private Button btnEditar;
-
-//     @FXML
-//     private Button btnEliminar;
-
-//     @FXML
-//     private Button btnEliminar1;
-
-//     @FXML
-//     private TableColumn<ObservableList<String>, String> colCantidad;
-
-//     @FXML
-//     private TableColumn<ObservableList<String>, String> colIdDetalle;
-
-//     @FXML
-//     private TableColumn<ObservableList<String>, String> colIdProducto;
-
-//     @FXML
-//     private TableColumn<ObservableList<String>, String> colIdVenta;
-
-//     @FXML
-//     private TableColumn<ObservableList<String>, String> colPrecioUnitario;
-
-//     @FXML
-//     private TableColumn<ObservableList<String>, String> colSubtotal;
-
-//     @FXML
-//     private TableView<ObservableList<String>> tablaDetalles;
-
-//     public static ObservableList<String> detalleSeleccionado;
-
-//     @FXML 
-//     public void initialize() {
-//         colIdVenta.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(0)));
-//         colIdDetalle.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(1)));
-//         colIdProducto.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(2)));
-//         colCantidad.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(3)));
-//         colPrecioUnitario.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(4)));
-//         colSubtotal.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().get(5)));
-
-//         tablaDetalles.setItems(AdministrarDetalleVenta.obtenerTodos(ContextoModulo.getProvinciaActual()));
-//         ajustarInterfazPorConexion();
-//     }
-    
-
-//     private void ajustarInterfazPorConexion() {
-//         System.out.println("Tipo de conexión actual: " + Util.ContextoConexion.getTipoConexion());
-
-//         if (Util.ContextoConexion.getTipoConexion() == Util.ContextoConexion.TipoConexion.REMOTO) {
-//             System.out.println("Modo REMOTO: Ocultando botones");
-//             btnAgregar.setVisible(false);
-//             btnEditar.setVisible(false);
-//             btnEliminar.setVisible(false);
-//         } else {
-//             System.out.println("Modo MASTER: Mostrando botones");
-//             btnAgregar.setVisible(true);
-//             btnEditar.setVisible(true);
-//             btnEliminar.setVisible(true);
-//         }
-//     }
-
-//     @FXML
-//     void agregarNuevoDetalleVenta(ActionEvent event) throws Exception {
-//         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-//         Ventana.cambiarEscena(stage, "/GUI/Interfaz/FormularioDetalleVenta.fxml","Añadir Detalle de Venta");
-//     }
-
-//     @FXML
-//     void editarDetalleVenta(ActionEvent event) throws Exception {
-//         ObservableList<String> seleccionada = tablaDetalles.getSelectionModel().getSelectedItem();
-//         if (seleccionada == null) {
-//             System.out.println("Debe seleccionar un detalle de venta para editar.");
-//             return;
-//         }
-
-//         try {
-//             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Interfaz/ModificadorDetalleVenta.fxml"));
-//             Parent root = loader.load();
-//             ModificadorDetalleVentaController controller = loader.getController();
-//             controller.recibirDatos(seleccionada.get(0), seleccionada.get(1), seleccionada.get(2), seleccionada.get(3), seleccionada.get(4), seleccionada.get(5));
-//             Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-//             stage.setScene(new Scene(root));
-//             stage.setTitle("Modificar Detalle de Venta");
-//             stage.show();
-//         } catch (Exception e) {
-//             e.printStackTrace();
-//         }
-//     }
-
-//     @FXML
-//     void eliminarDetalleVenta(ActionEvent event) {
-//         ObservableList<String> seleccionada = tablaDetalles.getSelectionModel().getSelectedItem();
-//         if (seleccionada == null) {
-//             mostrarAlerta("Debe seleccionar un detalle de venta para eliminar.", Alert.AlertType.WARNING);
-//             return;
-//         }
-
-//         int ventaId = Integer.parseInt(seleccionada.get(0));
-//         int detalleId = Integer.parseInt(seleccionada.get(1));
-//         int productoId = Integer.parseInt(seleccionada.get(2));
-//         AdministrarDetalleVenta.eliminar(ventaId, detalleId, productoId);
-//         tablaDetalles.setItems(AdministrarDetalleVenta.obtenerTodos(ContextoModulo.getProvinciaActual()));
-//         mostrarAlerta("Detalle de venta eliminado correctamente.", Alert.AlertType.INFORMATION);
-//     }
-
-//     @FXML
-//     void regresar(ActionEvent event) {
-//         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-//         Ventana.cambiarEscena(stage, "/GUI/Interfaz/MenuPrincipal.fxml", "Menu Principal");
-        
-//     }
-
-//     private void mostrarAlerta(String mensaje, Alert.AlertType type) {
-//         Alert alert = new Alert(type);
-//         alert.setContentText(mensaje);
-//         alert.showAndWait();
-//     }
-
-// }
