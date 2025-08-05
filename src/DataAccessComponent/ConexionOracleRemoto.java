@@ -12,8 +12,8 @@ public class ConexionOracleRemoto {
     private static final String URL_VPN = "jdbc:oracle:thin:@26.1.77.168:1521:orcl";
 
     // URL por defecto (Configurable)
-    private static final String URL = URL_VPN;
     // private static final String URL = URL_VPN;
+    private static final String URL = URL_LOCAL;
 
     private static final String USER = "tiendasNorte";
     private static final String PASSWORD = "tiendasnorte";
