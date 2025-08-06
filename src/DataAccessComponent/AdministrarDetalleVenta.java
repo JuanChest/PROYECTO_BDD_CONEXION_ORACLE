@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import Util.ConexionFactory;
-import Util.ContextoConexion;
 import Util.ContextoModulo;
 import Util.TablaDistribuida;
 import javafx.collections.FXCollections;
@@ -54,10 +53,7 @@ public class AdministrarDetalleVenta {
     }
 
     public static void actualizar(int idVenta, int idDetalle, int idProducto, int cantidad, double precioUnitario, double subtotal) {
-        if (ContextoConexion.getTipoConexion() != ContextoConexion.TipoConexion.MASTER) {
-            System.out.println("No se permite actualizar desde una conexión remota.");
-            return;
-        }
+        
         String provincia = ContextoModulo.getProvinciaActual();
         String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA", provincia);
         String sql = "UPDATE " + tabla + " SET CANTIDAD = ?, PRECIO_UNITARIO = ?, SUB_TOTAL = ? WHERE VENTA_ID = ? AND DETALLE_ID = ? AND PRODUCTO_ID = ?";
@@ -89,10 +85,7 @@ public class AdministrarDetalleVenta {
 
 
     public static void eliminar(int idVenta, int idDetalle, int idProducto) {
-        if (ContextoConexion.getTipoConexion() != ContextoConexion.TipoConexion.MASTER) {
-            System.out.println("No se permite eliminar desde una conexión remota.");
-            return;
-        }
+        
         String provincia = ContextoModulo.getProvinciaActual();
         String tabla = TablaDistribuida.obtenerNombre("DETALLE_VENTA", provincia);
         String sql = "DELETE FROM " + tabla + " WHERE VENTA_ID = ? AND DETALLE_ID = ? AND PRODUCTO_ID = ?";

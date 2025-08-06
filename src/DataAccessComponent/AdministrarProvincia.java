@@ -128,26 +128,18 @@ public class AdministrarProvincia {
     }
 
 
-    public static ObservableList<ObservableList<String>> obtenerTodos() {
+    public static ObservableList<ObservableList<String>> obtenerTodos(String provincia) {
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
-
+        String tabla = TablaDistribuida.obtenerNombre("PROVINCIA", provincia);
+        String sql = "SELECT * FROM " + tabla;
         try (Connection conn = ConexionFactory.obtenerConexion()) {
-            String provincia = ContextoModulo.getProvinciaActual();
-            String tabla = TablaDistribuida.obtenerNombre("PROVINCIA", provincia);
-            String sql = "SELECT * FROM " + tabla;
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
 
                 while (rs.next()) {
                     ObservableList<String> fila = FXCollections.observableArrayList();
-                    fila.add(String.valueOf(rs.getInt("CLIENTE_ID")));
-                    fila.add(rs.getString("PROVINCIA_ID"));
-                    fila.add(rs.getString("NOMBRE"));
-                    fila.add(rs.getString("APELLIDO"));
-                    fila.add(rs.getString("CEDULA"));
-                    fila.add(rs.getString("EMAIL"));
-                    fila.add(rs.getString("TELEFONO"));
-
+                    fila.add(String.valueOf(rs.getInt("PROVINCIA_ID")));
+                    fila.add(rs.getString("NOMBRE_PROVINCIA"));
                     datos.add(fila);
                 }
             }

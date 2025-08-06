@@ -107,9 +107,8 @@ public class AdministrarProveedor {
         }
     }
 
-    public static ObservableList<ObservableList<String>> obtenerTodos() {
+    public static ObservableList<ObservableList<String>> obtenerTodos(String provincia) {
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
-        String provincia = ContextoModulo.getProvinciaActual();
         String tabla = TablaDistribuida.obtenerNombre("PROVEEDOR", provincia);
         String sql = "SELECT * FROM " + tabla;
 

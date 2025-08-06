@@ -42,7 +42,7 @@ public class TablaDistribuida {
     public static String obtenerNombre(String base, String provincia) {
     // Si quieres que tanto MASTER como remotos usen los nombres replicados/fragmentados:
         // Primero verifica si la tabla es replicada:
-        if (nombresFragmentados.containsKey("REPLICADAS") && nombresFragmentados.get("REPLICADAS").containsKey(base)) {
+        if (nombresFragmentados.containsKey("REPLICADAS") && nombresFragmentados.get("REPLICADAS").containsKey(base) && ContextoConexion.getTipoConexion() != ContextoConexion.TipoConexion.MASTER) {
             return nombresFragmentados.get("REPLICADAS").get(base);
         }
         

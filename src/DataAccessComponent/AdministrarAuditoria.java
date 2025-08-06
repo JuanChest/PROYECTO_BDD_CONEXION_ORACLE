@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import Util.ContextoConexion;
+import Util.TablaDistribuida;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -20,11 +21,11 @@ public class AdministrarAuditoria {
         }
     }
 
-    public static ObservableList<ObservableList<String>> obtenerTodos() {
+    public static ObservableList<ObservableList<String>> obtenerTodos(String provincia) {
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
-
+        String tabla = TablaDistribuida.obtenerNombre("AUDITORIA_OPERACIONES", provincia);
+        String sql = "SELECT * FROM " + tabla;
         try (Connection conn = obtenerConexion()) {
-            String sql = "SELECT * FROM AUDITORIA_OPERACIONES";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
 

@@ -1,7 +1,10 @@
 package GUI.UserControl;
 
+import DataAccessComponent.AdministrarProvincia;
 import Util.ContextoConexion;
 import Util.ContextoModulo;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -23,10 +26,10 @@ public class GestionProvinciaController {
     private Button btnGuardar;
 
     @FXML
-    private TableColumn<?, ?> colNombreProvincia;
+    private TableColumn<ObservableList<String>, String> colNombreProvincia;
 
     @FXML
-    private TableColumn<?, ?> colProvinciaId;
+    private TableColumn<ObservableList<String>, String> colProvinciaId;
 
     @FXML
     private MenuItem menuClientesCotopaxi;
@@ -80,10 +83,11 @@ public class GestionProvinciaController {
     private TextField provinciaIdField;
 
     @FXML
-    private TableView<?> tablaProvincia;
+    private TableView<ObservableList<String>> tablaProvincia;
 
     @FXML
     public void initialize() {
+        String provincia = ContextoModulo.getProvinciaActual();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
             menuClientesPichincha.setText("ClientesGuayas");
             menuClientesCotopaxi.setText("ClientesManabi");
@@ -100,6 +104,25 @@ public class GestionProvinciaController {
             menuVentasPichincha.setText("VentasGuayas");
             menuVentasCotopaxi.setText("VentasManabi");
             menuVentasTungurahua.setText("VentasEsmeraldas");
+        }
+        colProvinciaId.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(0)));
+        colNombreProvincia.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(1)));
+        tablaProvincia.setItems(AdministrarProvincia.obtenerTodos(provincia));
+        ajustarInterfazPorConexion();
+    }
+
+    private void ajustarInterfazPorConexion() {
+        System.out.println("Tipo de conexión actual: " + Util.ContextoConexion.getTipoConexion());
+
+        if (Util.ContextoConexion.getTipoConexion() == Util.ContextoConexion.TipoConexion.REMOTO ||
+            Util.ContextoConexion.getTipoConexion() == Util.ContextoConexion.TipoConexion.MASTER){
+            System.out.println("Modo REMOTO: Ocultando botones");
+            btnGuardar.setVisible(false);
+            btnActualizar.setVisible(false);
+            btnEliminar.setVisible(false);
+            // Deshabilitar campos de entrada
+            provinciaIdField.setVisible(false);
+            nombreProvinciaField.setVisible(false);
         }
     }
 

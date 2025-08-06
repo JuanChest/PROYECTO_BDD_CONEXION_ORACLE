@@ -1,7 +1,16 @@
 package GUI.UserControl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import DataAccessComponent.AdministrarProveedor;
+import DataAccessComponent.ConexionOracleMaster;
 import Util.ContextoConexion;
 import Util.ContextoModulo;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -23,16 +32,16 @@ public class GestionProveedorController {
     private Button btnGuardar;
 
     @FXML
-    private TableColumn<?, ?> colEmail;
+    private TableColumn<ObservableList<String>, String> colEmail;
 
     @FXML
-    private TableColumn<?, ?> colNombre;
+    private TableColumn<ObservableList<String>, String> colNombre;
 
     @FXML
-    private TableColumn<?, ?> colProveedorId;
+    private TableColumn<ObservableList<String>, String> colProveedorId;
 
     @FXML
-    private TableColumn<?, ?> colTelefono;
+    private TableColumn<ObservableList<String>, String> colTelefono;
 
     @FXML
     private TextField emailField;
@@ -89,13 +98,14 @@ public class GestionProveedorController {
     private TextField proveedorIdField;
 
     @FXML
-    private TableView<?> tablaProveedor;
+    private TableView<ObservableList<String>> tablaProveedor;
 
     @FXML
     private TextField telefonoField;
 
     @FXML
     public void initialize() {
+        String provincia = ContextoModulo.getProvinciaActual();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
             menuClientesPichincha.setText("ClientesGuayas");
             menuClientesCotopaxi.setText("ClientesManabi");
@@ -113,21 +123,143 @@ public class GestionProveedorController {
             menuVentasCotopaxi.setText("VentasManabi");
             menuVentasTungurahua.setText("VentasEsmeraldas");
         }
+        // Cargar los proveedores en la tabla
+        colProveedorId.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(0)));
+        colNombre.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(1)));
+        colEmail.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(2)));
+        colTelefono.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(3)));
+        tablaProveedor.setItems(AdministrarProveedor.obtenerTodos(provincia));
+        ajustarInterfazPorConexion();
+
+        if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.MASTER) {
+            cargarSiguienteID();
+        }
+        proveedorIdField.setEditable(false);
+        tablaProveedor.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                proveedorIdField.setText(newValue.get(0));
+                nombreField.setText(newValue.get(1));
+                emailField.setText(newValue.get(2));
+                telefonoField.setText(newValue.get(3));
+            }
+            else {
+                proveedorIdField.clear();
+                nombreField.clear();
+                emailField.clear();
+                telefonoField.clear();
+
+
+            }
+        });
+        tablaProveedor.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                ObservableList<String> selectedRow = tablaProveedor.getSelectionModel().getSelectedItem();
+                if (selectedRow != null) {
+                    tablaProveedor.getSelectionModel().clearSelection();
+                    cargarSiguienteID();
+                    nombreField.clear();
+                    emailField.clear();
+                    telefonoField.clear();
+                }
+            }
+        });
+
     }
 
+    private void ajustarInterfazPorConexion() {
+        System.out.println("Tipo de conexión actual: " + Util.ContextoConexion.getTipoConexion());
+
+        if (Util.ContextoConexion.getTipoConexion() == Util.ContextoConexion.TipoConexion.REMOTO) {
+            System.out.println("Modo REMOTO: Ocultando botones");
+            btnGuardar.setVisible(false);
+            btnActualizar.setVisible(false);
+            btnEliminar.setVisible(false);
+            // Deshabilitar campos de entrada
+            proveedorIdField.setVisible(false);
+            nombreField.setVisible(false);
+            emailField.setVisible(false);
+            telefonoField.setVisible(false);
+        } else {
+            System.out.println("Modo MASTER: Mostrando botones");
+            btnGuardar.setVisible(true);
+            btnActualizar.setVisible(true);
+            btnEliminar.setVisible(true);
+        }
+    }
+
+    private void cargarSiguienteID() {
+        try {
+            Connection conn = ConexionOracleMaster.getConnection();
+            String sql = "SELECT MAX(PROVEEDOR_ID) AS MAX_ID FROM PROVEEDOR";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    int maxId = rs.getInt("MAX_ID");
+                    proveedorIdField.setText(String.valueOf(maxId + 1));
+                } else {
+                    proveedorIdField.setText("1");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            proveedorIdField.setText("1");
+        }
+    }
     @FXML
     void editarProveedor(ActionEvent event) {
+        if (nombreField.getText().isEmpty() || emailField.getText().isEmpty() || telefonoField.getText().isEmpty()) {
+            System.out.println("Por favor, complete todos los campos.");
+            return;
+        }
+        try {
+            int proveedorId = Integer.parseInt(proveedorIdField.getText());
+            String nombre = nombreField.getText();
+            String email = emailField.getText();
+            String telefono = telefonoField.getText();
+
+            AdministrarProveedor.actualizar(proveedorId, nombre, email, telefono);
+            tablaProveedor.setItems(AdministrarProveedor.obtenerTodos(ContextoModulo.getProvinciaActual()));
+            cargarSiguienteID();
+            System.out.println("Proveedor actualizado correctamente.");
+        } catch (NumberFormatException e) {
+            System.out.println("ID de proveedor inválido.");
+        }
 
     }
 
     @FXML
     void eliminarProveedor(ActionEvent event) {
-
+        ObservableList<String> selectedRow = tablaProveedor.getSelectionModel().getSelectedItem();
+        if (selectedRow == null) {
+            System.out.println("Por favor, seleccione un proveedor para eliminar.");
+            return;
+        }
+        int proveedorId = Integer.parseInt(selectedRow.get(0));
+        AdministrarProveedor.eliminar(proveedorId);
+        tablaProveedor.setItems(AdministrarProveedor.obtenerTodos(ContextoModulo.getProvinciaActual()));
+        cargarSiguienteID();
+        System.out.println("Proveedor eliminado correctamente.");
     }
 
     @FXML
     void guardarProveedor(ActionEvent event) {
-
+        String ProveedorId = proveedorIdField.getText();
+        String nombre = nombreField.getText();
+        String email = emailField.getText();
+        String telefono = telefonoField.getText();
+        if (nombre.isEmpty() || email.isEmpty() || telefono.isEmpty()) {
+            System.out.println("Por favor, complete todos los campos.");
+            return;
+        }
+        try {
+            int id = Integer.parseInt(ProveedorId);
+            AdministrarProveedor.insertar(id, nombre, email, telefono);
+            tablaProveedor.setItems(AdministrarProveedor.obtenerTodos(ContextoModulo.getProvinciaActual()));
+            cargarSiguienteID();
+            System.out.println("Proveedor guardado correctamente.");
+        } catch (NumberFormatException e) {
+            System.out.println("ID de proveedor inválido.");
+        }
     }
 
     @FXML

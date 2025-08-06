@@ -2,6 +2,8 @@ package GUI.UserControl;
 
 import Util.ContextoConexion;
 import Util.ContextoModulo;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
@@ -12,22 +14,22 @@ import javafx.stage.Stage;
 public class GestionAuditoriaController {
 
     @FXML
-    private TableColumn<?, ?> colFecha;
+    private TableColumn<ObservableList<String>, String> colFecha;
 
     @FXML
-    private TableColumn<?, ?> colIdAudit;
+    private TableColumn<ObservableList<String>, String> colIdAudit;
 
     @FXML
-    private TableColumn<?, ?> colInfo;
+    private TableColumn<ObservableList<String>, String> colInfo;
 
     @FXML
-    private TableColumn<?, ?> colOperacion;
+    private TableColumn<ObservableList<String>, String> colOperacion;
 
     @FXML
-    private TableColumn<?, ?> colTabla;
+    private TableColumn<ObservableList<String>, String> colTabla;
 
     @FXML
-    private TableColumn<?, ?> colUsuario;
+    private TableColumn<ObservableList<String>, String> colUsuario;
 
     @FXML
     private MenuItem menuClientesCotopaxi;
@@ -75,10 +77,11 @@ public class GestionAuditoriaController {
     private MenuItem menuVentasTungurahua;
 
     @FXML
-    private TableView<?> tablaAuditoria;
+    private TableView<ObservableList<String>> tablaAuditoria;
 
     @FXML
     public void initialize() {
+        String provincia = ContextoModulo.getProvinciaActual();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
             menuClientesPichincha.setText("ClientesGuayas");
             menuClientesCotopaxi.setText("ClientesManabi");
@@ -96,6 +99,13 @@ public class GestionAuditoriaController {
             menuVentasCotopaxi.setText("VentasManabi");
             menuVentasTungurahua.setText("VentasEsmeraldas");
         }
+        colIdAudit.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(0)));
+        colTabla.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(1)));
+        colOperacion.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(2)));
+        colUsuario.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(3)));
+        colFecha.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(4)));
+        colInfo.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(5)));
+        tablaAuditoria.setItems(DataAccessComponent.AdministrarAuditoria.obtenerTodos(provincia));
     }
 
     @FXML

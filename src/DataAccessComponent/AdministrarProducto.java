@@ -8,11 +8,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import Util.ContextoModulo;
+import Util.TablaDistribuida;
+
 public class AdministrarProducto {
 
     public static void insertar(int id, int proveedorId, String nombre, double precio) {
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("PRODUCTO", provincia);
+        String sql = "INSERT INTO "+ tabla + " (PRODUCTO_ID, PROVEEDOR_ID, NOMBRE, PRECIO) VALUES (?, ?, ?, ?)";
         try (Connection conn = ConexionOracleMaster.getConnection()) {
-            String sql = "INSERT INTO PRODUCTO (PRODUCTO_ID, PROVEEDOR_ID, NOMBRE, PRECIO) VALUES (?, ?, ?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 stmt.setInt(2, proveedorId);
@@ -26,8 +31,10 @@ public class AdministrarProducto {
     }
 
     public static void actualizar(int id, int proveedorId, String nombre, double precio) {
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("PRODUCTO", provincia);
+        String sql = "UPDATE "+ tabla +" SET PROVEEDOR_ID = ?, NOMBRE = ?, PRECIO = ? WHERE PRODUCTO_ID = ?";
         try (Connection conn = ConexionOracleMaster.getConnection()) {
-            String sql = "UPDATE PRODUCTO SET PROVEEDOR_ID = ?, NOMBRE = ?, PRECIO = ? WHERE PRODUCTO_ID = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, proveedorId);
                 stmt.setString(2, nombre);
@@ -41,18 +48,30 @@ public class AdministrarProducto {
     }
 
     public static void eliminar(int productoId) {
-        try (Connection conn = ConexionOracleMaster.getConnection()) {
-            conn.setAutoCommit(false); // Manejo manual de la transacción
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tablaProducto = TablaDistribuida.obtenerNombre("PRODUCTO", provincia);
+        String tablaDetalleVenta = TablaDistribuida.obtenerNombre("DETALLE_VENTA", provincia);
+        String tablaProductoInventario = TablaDistribuida.obtenerNombre("PRODUCTO_INVENTARIO", provincia);
 
-            // 1. Eliminar registros de DETALLE_VENTA relacionados con este producto
-            String eliminarDetalles = "DELETE FROM DETALLE_VENTA WHERE PRODUCTO_ID = ?";
+        try (Connection conn = ConexionOracleMaster.getConnection()) {
+            conn.setAutoCommit(false); // Iniciar transacción manual
+
+            // 1. Eliminar de DETALLE_VENTA
+            String eliminarDetalles = "DELETE FROM " + tablaDetalleVenta + " WHERE PRODUCTO_ID = ?";
             try (PreparedStatement ps = conn.prepareStatement(eliminarDetalles)) {
                 ps.setInt(1, productoId);
                 ps.executeUpdate();
             }
 
-            // 2. Finalmente, eliminar el PRODUCTO
-            String eliminarProducto = "DELETE FROM PRODUCTO WHERE PRODUCTO_ID = ?";
+            // 2. Eliminar de PRODUCTO_INVENTARIO
+            String eliminarInventario = "DELETE FROM " + tablaProductoInventario + " WHERE PRODUCTO_ID = ?";
+            try (PreparedStatement ps = conn.prepareStatement(eliminarInventario)) {
+                ps.setInt(1, productoId);
+                ps.executeUpdate();
+            }
+
+            // 3. Eliminar de PRODUCTO
+            String eliminarProducto = "DELETE FROM " + tablaProducto + " WHERE PRODUCTO_ID = ?";
             try (PreparedStatement ps = conn.prepareStatement(eliminarProducto)) {
                 ps.setInt(1, productoId);
                 ps.executeUpdate();
@@ -65,11 +84,13 @@ public class AdministrarProducto {
         }
     }
 
-    public static ObservableList<ObservableList<String>> obtenerTodos() {
+
+    public static ObservableList<ObservableList<String>> obtenerTodos(String provincia) {
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
+        String tabla = TablaDistribuida.obtenerNombre("PRODUCTO", provincia);
+        String sql = "SELECT * FROM " + tabla;
 
         try (Connection conn = ConexionOracleMaster.getConnection()) {
-            String sql = "SELECT PRODUCTO_ID, PROVEEDOR_ID, NOMBRE, PRECIO FROM PRODUCTO";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
 
@@ -78,8 +99,7 @@ public class AdministrarProducto {
                     fila.add(String.valueOf(rs.getInt("PRODUCTO_ID")));
                     fila.add(String.valueOf(rs.getInt("PROVEEDOR_ID")));
                     fila.add(rs.getString("NOMBRE"));
-                    fila.add(String.valueOf(rs.getDouble("PRECIO"))); // Precio como String
-
+                    fila.add(String.valueOf(rs.getDouble("PRECIO")));
                     datos.add(fila);
                 }
             }
