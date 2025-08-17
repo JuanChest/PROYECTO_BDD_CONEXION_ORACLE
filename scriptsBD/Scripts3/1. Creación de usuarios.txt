@@ -17,4 +17,3 @@ profile default;
 grant connect, resource to nodo2; 
 alter user nodo2 quota unlimited on users;
 grant connect, create database link to nodo2;
-

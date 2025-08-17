@@ -41,7 +41,7 @@ public class AdministrarCliente {
         }
     }
 
-    public static void actualizar(int id, String nombre, String apellido, String cedula, String email, String telefono) {
+    public static void actualizar(int id, int provincia_id, String nombre, String apellido, String cedula, String email, String telefono) {
         if (ContextoConexion.getTipoConexion() != ContextoConexion.TipoConexion.MASTER) {
             System.out.println("No se permite actualizar desde una conexión remota.");
             return;
@@ -58,6 +58,7 @@ public class AdministrarCliente {
                 stmt.setString(4, email);
                 stmt.setString(5, telefono);
                 stmt.setInt(6, id);
+
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
@@ -65,76 +66,37 @@ public class AdministrarCliente {
         }
     }
 
-    public static void eliminar(int clienteId) {
+
+    public static void eliminar(int clienteId, int provincia_id) {
         if (ContextoConexion.getTipoConexion() != ContextoConexion.TipoConexion.MASTER) {
             System.out.println("No se permite eliminar desde una conexión remota.");
             return;
         }
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("CLIENTE", provincia);
+        String sql = "DELETE FROM " + tabla + " WHERE CLIENTE_ID = ?";
+        System.out.println(sql);
+        try (Connection conn = ConexionFactory.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            System.out.println(clienteId);
+            stmt.setInt(1, clienteId);
+            //stmt.setInt(2, provincia_id);
 
-        try (Connection conn = ConexionFactory.obtenerConexion()) {
-            conn.setAutoCommit(false); // Iniciar transacción manual
-
-            String provincia = ContextoModulo.getProvinciaActual();
-
-            // Obtener nombre tabla VENTAS según provincia
-            String tablaVentas = TablaDistribuida.obtenerNombre("VENTAS", provincia);
-            // Obtener nombre tabla DETALLE_VENTA según provincia
-            String tablaDetalleVenta = TablaDistribuida.obtenerNombre("DETALLE_VENTA", provincia);
-            // Obtener nombre tabla CLIENTE según provincia
-            String tablaCliente = TablaDistribuida.obtenerNombre("CLIENTE", provincia);
-
-            // Obtener todas las ventas del cliente
-            String sqlObtenerVentas = "SELECT VENTA_ID FROM " + tablaVentas + " WHERE CLIENTE_ID = ?";
-            List<Integer> ventasCliente = new ArrayList<>();
-
-            try (PreparedStatement psVentas = conn.prepareStatement(sqlObtenerVentas)) {
-                psVentas.setInt(1, clienteId);
-                try (ResultSet rsVentas = psVentas.executeQuery()) {
-                    while (rsVentas.next()) {
-                        ventasCliente.add(rsVentas.getInt("VENTA_ID"));
-                    }
-                }
-            }
-
-            // Eliminar detalles de venta para cada venta del cliente
-            String sqlEliminarDetalles = "DELETE FROM " + tablaDetalleVenta + " WHERE VENTA_ID = ?";
-            try (PreparedStatement psDetalles = conn.prepareStatement(sqlEliminarDetalles)) {
-                for (int ventaId : ventasCliente) {
-                    psDetalles.setInt(1, ventaId);
-                    psDetalles.executeUpdate();
-                }
-            }
-
-            // Eliminar ventas del cliente
-            String sqlEliminarVentas = "DELETE FROM " + tablaVentas + " WHERE CLIENTE_ID = ?";
-            try (PreparedStatement psEliminarVentas = conn.prepareStatement(sqlEliminarVentas)) {
-                psEliminarVentas.setInt(1, clienteId);
-                psEliminarVentas.executeUpdate();
-            }
-
-            // Finalmente eliminar cliente
-            String sqlEliminarCliente = "DELETE FROM " + tablaCliente + " WHERE CLIENTE_ID = ?";
-            try (PreparedStatement psEliminarCliente = conn.prepareStatement(sqlEliminarCliente)) {
-                psEliminarCliente.setInt(1, clienteId);
-                psEliminarCliente.executeUpdate();
-            }
-
-            conn.commit();
-            System.out.println("Cliente eliminado correctamente.");
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            // En caso de error podrías hacer rollback (si quieres manejarlo explícitamente)
         }
     }
 
-
-    public static ObservableList<ObservableList<String>> obtenerTodos() {
+    public static ObservableList<ObservableList<String>> obtenerTodos(String provincia) {
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
 
         try (Connection conn = ConexionFactory.obtenerConexion()) {
-            String provincia = ContextoModulo.getProvinciaActual();
             String tabla = TablaDistribuida.obtenerNombre("CLIENTE", provincia);
+            System.out.println("Tabla calculada dinámicamente: " + tabla);
+
             String sql = "SELECT * FROM " + tabla;
+            System.out.println("Ejecutando consulta: " + sql);
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
 

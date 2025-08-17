@@ -124,6 +124,8 @@ public class GestionProvinciaController {
             provinciaIdField.setVisible(false);
             nombreProvinciaField.setVisible(false);
         }
+        String provincia = ContextoModulo.getProvinciaActual();
+        System.out.println("Provincia: " + provincia);
     }
 
     @FXML

@@ -10,7 +10,7 @@ public class TablaDistribuida {
     static {
         // Tablas replicadas (materialized views)
         Map<String, String> replicadas = new HashMap<>();
-        replicadas.put("CLIENTE", "CLIENTE_REP");
+        //replicadas.put("CLIENTE", "CLIENTE");
         replicadas.put("PRODUCTO", "PRODUCTO_REP");
         replicadas.put("PROVEEDOR", "PROVEEDOR_REP");
         nombresFragmentados.put("REPLICADAS", replicadas);
@@ -33,9 +33,20 @@ public class TablaDistribuida {
         ventas.put("Esmeraldas", "VENTAS_ESMERALDAS");
 
         // Agrega más mapas para INVENTARIO, TIENDA, etc.
+        Map <String, String> clientes = new HashMap<>();
+        clientes.put("Pichincha", "CLIENTE_PICHINCHA");
+        clientes.put("Cotopaxi", "CLIENTE_COTOPAXI");
+        clientes.put("Tungurahua", "CLIENTE_TUNGURAHUA");
+        clientes.put("Manabi", "CLIENTE_MANABI");
+        clientes.put("Guayas", "CLIENTE_GUAYAS");
+        clientes.put("Esmeraldas", "CLIENTE_ESMERALDAS");
+        clientes.put("Global", "CLIENTE");
+        clientes.put("Replica", "CLIENTE_REPLICA");
+
 
         nombresFragmentados.put("DETALLE_VENTA", detalleVenta);
         nombresFragmentados.put("VENTAS", ventas);
+        nombresFragmentados.put("CLIENTE", clientes);
         // ... otras tablas fragmentadas
     }
 

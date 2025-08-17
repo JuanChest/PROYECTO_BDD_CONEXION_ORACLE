@@ -1,7 +1,10 @@
 package GUI.UserControl;
 
+import DataAccessComponent.AdministrarCliente;
+import DataAccessComponent.AdministrarDetalleVenta;
 import Util.ContextoConexion;
 import Util.ContextoModulo;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -32,25 +35,25 @@ public class GestionClienteController {
     private TextField clienteIdField;
 
     @FXML
-    private TableColumn<?, ?> colApellido;
+    private TableColumn<ObservableList<String>, String> colApellido;
 
     @FXML
-    private TableColumn<?, ?> colCedula;
+    private TableColumn<ObservableList<String>, String> colCedula;
 
     @FXML
-    private TableColumn<?, ?> colEmail;
+    private TableColumn<ObservableList<String>, String> colEmail;
 
     @FXML
-    private TableColumn<?, ?> colIdCliente;
+    private TableColumn<ObservableList<String>, String> colIdCliente;
 
     @FXML
-    private TableColumn<?, ?> colNombre;
+    private TableColumn<ObservableList<String>, String> colNombre;
 
     @FXML
-    private TableColumn<?, ?> colProvinciaId;
+    private TableColumn<ObservableList<String>, String> colProvinciaId;
 
     @FXML
-    private TableColumn<?, ?> colTelefono;
+    private TableColumn<ObservableList<String>, String> colTelefono;
 
     @FXML
     private TextField emailField;
@@ -107,13 +110,15 @@ public class GestionClienteController {
     private TextField provinciaIdField;
 
     @FXML
-    private TableView<?> tablaClientes;
+    private TableView<ObservableList<String>> tablaClientes;
 
     @FXML
     private TextField telefonoField;
 
     @FXML
     public void initialize() {
+        String provincia = ContextoModulo.getProvinciaActual();
+        System.out.println("Provincia: " + provincia);
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
             menuClientesPichincha.setText("ClientesGuayas");
             menuClientesCotopaxi.setText("ClientesManabi");
@@ -131,21 +136,153 @@ public class GestionClienteController {
             menuVentasCotopaxi.setText("VentasManabi");
             menuVentasTungurahua.setText("VentasEsmeraldas");
         }
+        colIdCliente.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(0)));
+        colProvinciaId.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(1)));
+        colNombre.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(2)));
+        colApellido.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(3)));
+        colCedula.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(4)));
+        colEmail.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(5)));
+        colTelefono.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(6)));
+        tablaClientes.setItems(AdministrarCliente.obtenerTodos(provincia));
+
+        tablaClientes.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                clienteIdField.setText(newSelection.get(0));
+                provinciaIdField.setText(newSelection.get(1));
+                nombreField.setText(newSelection.get(2));
+                apellidoField.setText(newSelection.get(3));
+                cedulaField.setText(newSelection.get(4));
+                emailField.setText(newSelection.get(5));
+                telefonoField.setText(newSelection.get(6));
+
+                clienteIdField.setDisable(true);
+                clienteIdField.setEditable(false);
+                provinciaIdField.setDisable(true);
+                provinciaIdField.setEditable(false);
+                nombreField.setEditable(true);
+                apellidoField.setEditable(true);
+                cedulaField.setEditable(true);
+                emailField.setEditable(true);
+                telefonoField.setEditable(true);
+            } else {
+                // Limpiar los campos
+                clienteIdField.clear();
+                provinciaIdField.clear();
+                nombreField.clear();
+                apellidoField.clear();
+                cedulaField.clear();
+                emailField.clear();
+                telefonoField.clear();
+
+                // Opcional: volver editables si quieres permitir inserción nueva
+                clienteIdField.setEditable(true);
+                clienteIdField.setDisable(false);
+                provinciaIdField.setEditable(true);
+                provinciaIdField.setDisable(false);
+                nombreField.setEditable(true);
+                apellidoField.setEditable(true);
+                emailField.setEditable(true);
+                cedulaField.setEditable(true);
+                telefonoField.setEditable(true);
+            }
+        });
+
+        tablaClientes.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                ObservableList<String> selectedItem = tablaClientes.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    tablaClientes.getSelectionModel().clearSelection();
+
+                    clienteIdField.clear();
+                    provinciaIdField.clear();
+                    nombreField.clear();
+                    apellidoField.clear();
+                    cedulaField.clear();
+                    emailField.clear();
+                    telefonoField.clear();
+
+                    clienteIdField.setEditable(true);
+                    provinciaIdField.setEditable(true);
+                    nombreField.setEditable(true);
+                    apellidoField.setEditable(true);
+                    cedulaField.setEditable(true);
+                    emailField.setEditable(true);
+                    telefonoField.setEditable(true);
+                }
+            }
+        });
+
     }
+
+
 
     @FXML
     void editarCliente(ActionEvent event) {
+        if (clienteIdField.getText().isEmpty() || provinciaIdField.getText().isEmpty() || nombreField.getText().isEmpty() ||
+                apellidoField.getText().isEmpty () || cedulaField.getText().isEmpty() || emailField.getText().isEmpty() || telefonoField.getText().isEmpty())  {
+            System.out.println("Error: Todos los campos deben estar llenos.");
+            return;
+        }
+        try {
+            int clienteId = Integer.parseInt(clienteIdField.getText());
+            int provinciaId = Integer.parseInt(provinciaIdField.getText());
+            String nombre = nombreField.getText();
+            String apellido = apellidoField.getText();
+            String cedula = cedulaField.getText();
+            String email = emailField.getText();
+            String telefono = telefonoField.getText();
+
+
+            AdministrarCliente.actualizar(clienteId, provinciaId, nombre, apellido, cedula, email, telefono);
+
+            tablaClientes.setItems(AdministrarCliente.obtenerTodos(ContextoModulo.getProvinciaActual()));
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Debe ingresar datos válidos para actualizar.");
+        }
 
     }
 
     @FXML
     void eliminarCliente(ActionEvent event) {
+        ObservableList<String> lista = tablaClientes.getSelectionModel().getSelectedItem();
+        if (lista.isEmpty()) {
+            System.out.println("Debe seleccionar un detalle de venta para eliminar.");
+            return;
+        }
+        int clienteid = Integer.parseInt(lista.get(0));
+        int provinciaid = Integer.parseInt(lista.get(1));
 
+        AdministrarCliente.eliminar(clienteid, provinciaid);
+        tablaClientes.setItems(AdministrarCliente.obtenerTodos(ContextoModulo.getProvinciaActual()));
     }
 
     @FXML
     void guardarCliente(ActionEvent event) {
+        int clienteId = Integer.parseInt(clienteIdField.getText());
+        int provinciaId = Integer.parseInt(provinciaIdField.getText());
+        String nombre = nombreField.getText();
+        String apellido = apellidoField.getText();
+        String cedula = cedulaField.getText();
+        String email = emailField.getText();
+        String telefono = telefonoField.getText();
 
+        if (clienteIdField.getText().isEmpty() || provinciaIdField.getText().isEmpty() || nombreField.getText().isEmpty() ||
+                apellidoField.getText().isEmpty () || cedulaField.getText().isEmpty() || emailField.getText().isEmpty() || telefonoField.getText().isEmpty())  {
+            System.out.println("Error: Todos los campos deben estar llenos.");
+            return;
+        }
+
+
+        /*
+        if (AdministrarDetalleVenta.existeDetalle(idVenta, idDetalle, idProducto)) {
+            System.out.println("Error: Ya existe un detalle de venta con esa clave primaria.");
+            return;
+        }*/
+
+
+        AdministrarCliente.insertar(clienteId, provinciaId, nombre, apellido, cedula, email, telefono);
+
+        tablaClientes.setItems(AdministrarCliente.obtenerTodos(ContextoModulo.getProvinciaActual()));
     }
 
     @FXML
@@ -162,7 +299,6 @@ public class GestionClienteController {
     void irClientesCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
             ContextoModulo.setProvinciaActual("Cotopaxi");
@@ -174,8 +310,10 @@ public class GestionClienteController {
     void irClientesGlobal(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Replica");;
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Global");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -196,7 +334,7 @@ public class GestionClienteController {
     void irClientesTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Esmeraldas");
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
             ContextoModulo.setProvinciaActual("Tungurahua");
@@ -208,10 +346,8 @@ public class GestionClienteController {
     void irDetalleVentaCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -220,10 +356,8 @@ public class GestionClienteController {
     void irDetalleVentaPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -232,10 +366,8 @@ public class GestionClienteController {
     void irDetalleVentaTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaDetalleVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -244,10 +376,8 @@ public class GestionClienteController {
     void irInventarioCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -256,10 +386,8 @@ public class GestionClienteController {
     void irInventarioPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -268,10 +396,8 @@ public class GestionClienteController {
     void irInventarioTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -310,10 +436,8 @@ public class GestionClienteController {
     void irTiendasCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -322,10 +446,8 @@ public class GestionClienteController {
     void irTiendasPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -334,10 +456,8 @@ public class GestionClienteController {
     void irTiendasTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaTiendas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -346,10 +466,8 @@ public class GestionClienteController {
     void irVentasCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -358,10 +476,8 @@ public class GestionClienteController {
     void irVentasPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -370,10 +486,8 @@ public class GestionClienteController {
     void irVentasTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
-            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
-            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }

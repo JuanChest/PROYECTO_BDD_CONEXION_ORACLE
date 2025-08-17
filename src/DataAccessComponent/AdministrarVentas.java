@@ -1,6 +1,5 @@
 package DataAccessComponent;
 
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -8,13 +7,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import Util.ConexionFactory;
+import Util.ContextoModulo;
 import Util.TablaDistribuida;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class AdministrarVentas {
+
     public static void insertar(int ventaId, int tiendaId, int clienteId, Date fecha, double total) {
-        String tabla = TablaDistribuida.obtenerNombre("VENTAS");
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("VENTAS", provincia);
         String sql = "INSERT INTO " + tabla + " (VENTA_ID, ID_TIENDA, CLIENTE_ID, FECHA, TOTAL) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = ConexionFactory.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -30,7 +32,8 @@ public class AdministrarVentas {
     }
 
     public static void actualizar(int ventaId, int tiendaId, int clienteId, Date fecha, double total) {
-        String tabla = TablaDistribuida.obtenerNombre("VENTAS");
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("VENTAS", provincia);
         String sql = "UPDATE " + tabla + " SET ID_TIENDA=?, CLIENTE_ID=?, FECHA=?, TOTAL=? WHERE VENTA_ID=?";
         try (Connection conn = ConexionFactory.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -46,7 +49,8 @@ public class AdministrarVentas {
     }
 
     public static void eliminar(int ventaId) {
-        String tabla = TablaDistribuida.obtenerNombre("VENTAS");
+        String provincia = ContextoModulo.getProvinciaActual();
+        String tabla = TablaDistribuida.obtenerNombre("VENTAS", provincia);
         String sql = "DELETE FROM " + tabla + " WHERE VENTA_ID=?";
         try (Connection conn = ConexionFactory.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -57,26 +61,26 @@ public class AdministrarVentas {
         }
     }
 
-    public static ObservableList<ObservableList<String>> obtenerTodos () {
-        String tabla = TablaDistribuida.obtenerNombre("VENTAS");
-        String sql = "SELECT * FROM " + tabla + " ORDER BY VENTA_ID";
-        ObservableList<ObservableList<String>> listaVentas = FXCollections.observableArrayList();
-        try (Connection conn = ConexionFactory.obtenerConexion();
+    public static ObservableList<ObservableList<String>> obtenerPorFragmento(String nombreFragmento) {
+        ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
+
+        String sql = "SELECT * FROM " + nombreFragmento;
+        try (Connection conn = ConexionOracleMaster.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
+
             while (rs.next()) {
                 ObservableList<String> fila = FXCollections.observableArrayList();
-                fila.add(String.valueOf(rs.getInt("VENTA_ID")));
-                fila.add(String.valueOf(rs.getInt("ID_TIENDA")));
-                fila.add(String.valueOf(rs.getInt("CLIENTE_ID")));
-                fila.add(rs.getString("FECHA"));
-                fila.add(String.valueOf(rs.getDouble("TOTAL")));
-                listaVentas.add(fila);
+                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                    fila.add(rs.getString(i));
+                }
+                datos.add(fila);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return listaVentas;
+
+        return datos;
     }
 }
-
