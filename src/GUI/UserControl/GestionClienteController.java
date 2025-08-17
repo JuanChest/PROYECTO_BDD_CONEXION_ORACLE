@@ -1,7 +1,6 @@
 package GUI.UserControl;
 
 import DataAccessComponent.AdministrarCliente;
-import DataAccessComponent.AdministrarDetalleVenta;
 import Util.ContextoConexion;
 import Util.ContextoModulo;
 import javafx.collections.ObservableList;
@@ -299,6 +298,7 @@ public class GestionClienteController {
     void irClientesCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaClientes.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
             ContextoModulo.setProvinciaActual("Cotopaxi");

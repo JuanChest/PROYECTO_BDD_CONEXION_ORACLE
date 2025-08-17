@@ -61,22 +61,27 @@ public class AdministrarVentas {
         }
     }
 
-    public static ObservableList<ObservableList<String>> obtenerPorFragmento(String nombreFragmento) {
+    public static ObservableList<ObservableList<String>> obtenerTodos(String provincia) {
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
 
-        String sql = "SELECT * FROM " + nombreFragmento;
-        try (Connection conn = ConexionOracleMaster.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = ConexionFactory.obtenerConexion()) {
+             String tabla = TablaDistribuida.obtenerNombre("VENTAS", provincia);
+             System.out.println("Tabla calculada dinámicamente: " + tabla);
+             String sql = "SELECT * FROM " + tabla;
+            System.out.println("Ejecutando consulta: " + sql);
+            try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    ObservableList<String> fila = FXCollections.observableArrayList();
+                    fila.add(rs.getString("VENTA_ID"));
+                    fila.add(rs.getString("ID_TIENDA"));
+                    fila.add(rs.getString("CLIENTE_ID"));
+                    fila.add(rs.getString("FECHA"));
+                    fila.add(rs.getString("TOTAL"));
 
-            while (rs.next()) {
-                ObservableList<String> fila = FXCollections.observableArrayList();
-                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-                    fila.add(rs.getString(i));
+                    datos.add(fila);
                 }
-                datos.add(fila);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

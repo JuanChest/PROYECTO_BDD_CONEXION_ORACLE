@@ -1,7 +1,9 @@
 package GUI.UserControl;
 
+import DataAccessComponent.AdministrarVentas;
 import Util.ContextoConexion;
 import Util.ContextoModulo;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -10,7 +12,10 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+
+import java.sql.SQLOutput;
 
 public class GestionVentaController {
 
@@ -27,19 +32,19 @@ public class GestionVentaController {
     private TextField clienteIdField;
 
     @FXML
-    private TableColumn<?, ?> colFecha;
+    private TableColumn<ObservableList<String>, String> colFecha;
 
     @FXML
-    private TableColumn<?, ?> colIdCliente;
+    private TableColumn<ObservableList<String>, String> colIdCliente;
 
     @FXML
-    private TableColumn<?, ?> colIdTienda;
+    private TableColumn<ObservableList<String>, String> colIdTienda;
 
     @FXML
-    private TableColumn<?, ?> colIdVenta;
+    private TableColumn<ObservableList<String>, String> colIdVenta;
 
     @FXML
-    private TableColumn<?, ?> colTotal;
+    private TableColumn<ObservableList<String>, String> colTotal;
 
     @FXML
     private DatePicker fechaPicker;
@@ -90,7 +95,7 @@ public class GestionVentaController {
     private MenuItem menuVentasTungurahua;
 
     @FXML
-    private TableView<?> tablaVentas;
+    private TableView<ObservableList<String>> tablaVentas;
 
     @FXML
     private TextField tiendaIdField;
@@ -103,6 +108,8 @@ public class GestionVentaController {
 
     @FXML
     public void initialize() {
+        String provincia = ContextoModulo.getProvinciaActual();
+        System.out.println("Provincia: " + provincia);
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
             menuClientesPichincha.setText("ClientesGuayas");
             menuClientesCotopaxi.setText("ClientesManabi");
@@ -120,6 +127,13 @@ public class GestionVentaController {
             menuVentasCotopaxi.setText("VentasManabi");
             menuVentasTungurahua.setText("VentasEsmeraldas");
         }
+        colIdVenta.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(0)));
+        colIdTienda.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(1)));
+        colIdCliente.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(2)));
+        colFecha.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(3)));
+        colTotal.setCellValueFactory(param -> new javafx.beans.property.SimpleStringProperty(param.getValue().get(4)));
+
+        tablaVentas.setItems(AdministrarVentas.obtenerTodos(provincia));
     }
 
     @FXML
@@ -223,6 +237,7 @@ public class GestionVentaController {
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaInventario.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -311,8 +326,10 @@ public class GestionVentaController {
     void irVentasCotopaxi(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Esmeraldas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Cotopaxi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -321,8 +338,10 @@ public class GestionVentaController {
     void irVentasPichincha(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Guayas");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Pichincha");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
@@ -331,8 +350,10 @@ public class GestionVentaController {
     void irVentasTungurahua(ActionEvent event) {
         Stage stage = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
         if (ContextoConexion.getTipoConexion() == ContextoConexion.TipoConexion.REMOTO) {
+            ContextoModulo.setProvinciaActual("Manabi");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Remoto)");
         } else {
+            ContextoModulo.setProvinciaActual("Tungurahua");
             Ventana.cambiarEscena(stage, "/GUI/Interfaz/PantallaVentas.fxml", "Proyecto: Menu Principal (Master)");
         }
     }
